@@ -4,3 +4,4 @@ numpy
 matplotlib
 seaborn
 gdown
+textwrap
