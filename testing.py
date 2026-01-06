@@ -21,17 +21,17 @@ else:
 
 st.write('OR')
 
-file_id = st.number_input('Input shared Google Drive file ID')
+file_id = st.text_input('Input shared Google Drive file ID')
 file_name = st.text_input('Input shared Google Drive file name')
 if file_id is not None and file_name is not None:
   file_url = f'https://drive.google.com/uc?id={file_id}'
   uploaded_file = gdown.download(file_url, file_name, quiet = True)
   try:
-    if uploaded_file.name.endswith('.csv'):
+    if file_name.endswith('.csv'):
       df_pp = pd.read_csv(uploaded_file)
-    elif uploaded_file.name.endswith('.xlsx'):
+    elif file_name.endswith('.xlsx'):
       df_pp = pd.read_excel(uploaded_file)
   except:
     st.error("Uploaded file format must be in either '.csv' or '.xlsx'")
 else:
-  st.info('Link a shared file to begin analysis', icon = 'ℹ️')
+  st.info('Link a shared file to begin the analysis', icon = 'ℹ️')
