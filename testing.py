@@ -1,3 +1,9 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 st.title('Mini AutoML (Cross-Sectional) v1.0 - Streamlit')
 
 uploaded_file = st.file_uploader("Upload a '.csv' or '.xlsx' file", type = ['csv', 'xlsx'], accept_multiple_files = False)
