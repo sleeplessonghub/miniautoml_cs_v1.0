@@ -6,7 +6,9 @@ import seaborn as sns
 import gdown
 
 st.title('Mini AutoML (Cross-Sectional) v1.0')
-st.header('Upload a file for analysis using of the two method shown below:')
+st.header('Upload a file for analysis using one of the two methods shown below:')
+
+df_pp = pd.DataFrame()
 
 uploaded_file = st.file_uploader("Upload a '.csv' or '.xlsx' file", type = ['csv', 'xlsx'], accept_multiple_files = False)
 if uploaded_file:
@@ -18,7 +20,7 @@ if uploaded_file:
   except:
     st.error("Uploaded file format must be in either '.csv' or '.xlsx'")
 else:
-  st.info('Upload a file to begin the analysis', icon = 'ℹ️')
+  st.info('Upload a file of the requested format from local to begin the analysis', icon = 'ℹ️')
 
 st.write('OR')
 
@@ -36,7 +38,7 @@ if file_id != '' and file_name != '':
     except:
       st.error("Uploaded file format must be in either '.csv' or '.xlsx'")
 else:
-  st.info('Link a shared file to begin the analysis', icon = 'ℹ️')
+  st.info('Link a shared Google Drive file of the requested format to begin the analysis', icon = 'ℹ️')
 
 if df_pp:
   st.write(df_pp.head())
