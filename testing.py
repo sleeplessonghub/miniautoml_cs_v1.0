@@ -23,7 +23,7 @@ st.write('OR')
 
 file_id = st.text_input('Input shared Google Drive file ID')
 file_name = st.text_input('Input shared Google Drive file name')
-if file_id is not None and file_name is not None:
+if file_id != '' and file_name != '':
   file_url = f'https://drive.google.com/uc?id={file_id}'
   uploaded_file = gdown.download(file_url, file_name, quiet = True)
   try:
