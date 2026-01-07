@@ -59,7 +59,22 @@ if st.session_state['df_pp'] is not None:
   df_pp = st.session_state['df_pp']
   file_name_ref = st.session_state['file_name_ref']
 
-  # Uploaded file preview
+  # Dataset unusable column cleaning
+  original_columns = [col for col in df_pp.columns]
+  for col in original_columns:
+    if col.startswith('Unnamed:') or len(df_pp) == df_pp[col].isna().sum() or df_pp[col].nunique() == 1:
+      df_pp.drop(col, axis = 1, inplace = True)
+  
+  # Dataset object column name and value leading/trailing white space cleaning
+  for col in original_columns:
+    if df_pp[col].dtypes == object:
+      df_pp[col] = df_pp[col].str.strip()
+    if col != col.strip():
+      df_pp.rename(columns = {col: col.strip()}, inplace = True)
+  
+  # E
+
+  # Testing output
   st.write(f"'{file_name_ref}' Data Preview:")
   st.dataframe(df_pp.head())
 else:
