@@ -65,8 +65,9 @@ if st.session_state['df_pp'] is not None:
     if col.startswith('Unnamed:') or len(df_pp) == df_pp[col].isna().sum() or df_pp[col].nunique() == 1:
       df_pp.drop(col, axis = 1, inplace = True)
   
-  # Dataset object column name and value leading/trailing white space cleaning
-  for col in original_columns:
+  # Dataset object column leading/trailing white space cleaning
+  original_columns_2 = [col for col in df_pp.columns]
+  for col in original_columns_2:
     if df_pp[col].dtypes == object:
       df_pp[col] = df_pp[col].str.strip()
     if col != col.strip():
@@ -77,5 +78,6 @@ if st.session_state['df_pp'] is not None:
   # Testing output
   st.write(f"'{file_name_ref}' Data Preview:")
   st.dataframe(df_pp.head())
+
 else:
   st.subheader('No file upload detected')
