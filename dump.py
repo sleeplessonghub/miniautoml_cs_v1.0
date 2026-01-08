@@ -108,10 +108,11 @@ if st.session_state['df_pp'] is not None:
       if data_type == 'Identification':
         id_count = id_count + 1
       col_types.append(data_type)
-    submitted = st.session_state['submitted'] = st.form_submit_button('Confirm type specification')
+    submitted = st.form_submit_button('Confirm type specification')
 
-  if submitted:
-    st.session_state['submitted_ref'] = True
+  if submitted == True:
+    submitted_ref = st.session_state['submitted_ref'] = True
+  else:
     submitted_ref = st.session_state['submitted_ref']
   
   if submitted_ref == True:
@@ -162,6 +163,11 @@ if st.session_state['df_pp'] is not None:
       st.write('✅ — Train-test split with a ratio of 70:30 complete!')
       st.write(f'⋯ {len(train)} rows left for training set post-train/test split!')
       st.write(f'⋯ {len(test)} rows left for testing set post-train/test split!')
+
+      # Test output
+      st.dataframe(train.head())
+      st.write(col_names)
+      st.write(col_types)
 
 else:
   st.subheader('No file upload detected')
