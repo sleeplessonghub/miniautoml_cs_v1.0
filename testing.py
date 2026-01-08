@@ -138,7 +138,7 @@ if st.session_state['df_pp'] is not None:
       st.write(f'⋯ {len(test)} rows left for testing set post-train/test split!')
 
       # Dataset cell missingness handling
-      placeholder = 0123456789 # Placeholder value, unlikely to naturally occur in real-world datasets
+      placeholder = 9898989898 # Placeholder value, unlikely to naturally occur in real-world datasets
       df_pp_rows_w_nan = df_pp.isna().any(axis = 1).sum()
       percent_missing = df_pp_rows_w_nan / len(df_pp)
       central_tend_dict = dict()
