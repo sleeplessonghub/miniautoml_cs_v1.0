@@ -110,5 +110,11 @@ if st.session_state['df_pp'] is not None:
     else:
       st.write('✅ — Dataset variable type specification complete!') # Guarded execution block (layer 2)
 
+      # Random sampling in the case of large population
+      if len(df_pp) > 20000:
+        df_pp = df_pp.sample(n = 20000, random_state = 42, ignore_index = True)
+        st.write('✅ — Large population size random sampling complete!')
+        st.write(f'⋯ {len(df_pp)} rows left post-random sampling!')
+
 else:
   st.subheader('No file upload detected')
