@@ -15,6 +15,8 @@ if 'df_pp' not in st.session_state:
   st.session_state['df_pp'] = None # Layer 1 check
 if 'submitted_ref' not in st.session_state:
   st.session_state['submitted_ref'] = None # Layer 2 check
+if 'submitted_2_ref' not in st.session_state:
+  st.session_state['submitted_2_ref'] = None # Layer 3 check
 
 # Dataset upload and conversion to a pandas dataframe
 uploaded_file = st.file_uploader("Upload a '.csv' or '.xlsx' file", type = ['csv', 'xlsx'], accept_multiple_files = False)
@@ -138,7 +140,7 @@ if st.session_state['df_pp'] is not None:
       st.write(f'⋯ {len(test)} rows left for testing set post-train/test split!')
 
       # Dataset cell missingness handling
-      placeholder = 9898989898 # Placeholder value, unlikely to naturally occur in real-world datasets
+      placeholder = 0123456789 # Placeholder value, unlikely to naturally occur in real-world datasets
       df_pp_rows_w_nan = df_pp.isna().any(axis = 1).sum()
       percent_missing = df_pp_rows_w_nan / len(df_pp)
       central_tend_dict = dict()
@@ -301,24 +303,51 @@ if st.session_state['df_pp'] is not None:
         st.write(f'⋯ {len(test)} rows left for testing set post-outlier handling!')
 
       # Target variable selection
-      st.write('Select a target variable for machine learning from the list of available variables:')
-      train_info = pd.DataFrame({'Column': train.columns, 'Non-Null Count': train.count(numeric_only = False), 'Data Type': train.dtypes}).reset_index(drop = True)
-      st.dataframe(train_info)
+      st.write('Target Variable Selection:')
+      train_info = pd.DataFrame({'Variables': train.columns, 'Non-Null Count': train.count(numeric_only = False), 'Data Type': train.dtypes}).reset_index(drop = True)
+      st.dataframe(train_info, hide_index = True)
+      unassigned_count_2 = 0
+      is_object = None
       with st.form('target_variable_selection_form'):
         st.write(tw.dedent(
             """
-            * 'Object' variables are either ordinal/nominal according to the previous user specification
-            * Categorical target variables are always treated as nominal
-            * One-vs-All (OvA) encoding would be applied to categorical target variables with multiple classes
-            * User must select a target class for both of the non-OVA and OvA-encoded categorical target variable
+            Select a target variable for machine learning!
+
+            * 'object' variables are either Ordinal/Nominal according to the previous type specification
+            * Categorical target variables are always treated as Nominal
+            * One-vs-Rest (OvR) encoding would be applied to categorical target variables with more than 2 classes
+            * User must select a class 1 label for the chosen categorical target variable's classes
             """
         ).strip())
+        target = st.selectbox((train.columns.tolist().insert(0, '-')), label_visibility = 'hidden', accept_new_option = False)
+        if target == '-':
+          unassigned_count_2 = unassigned_count_2 + 1
+        if train[target].dtypes == float or train[target].dtypes == int:
+          is_object = False
+          submitted_2 = st.form_submit_button('Confirm target variable')
+        elif train[target].dtypes == object:
+          st.write(train[target].value_counts())
+          target_class = st.selectbox('Select a class 1 label:', (train[target].unique().tolist().insert(0, '-')), accept_new_option = False)
+          if target_class == '-':
+            unassigned_count_2 = unassigned_count_2 + 1
+          is_object = True
+          submitted_2 = st.form_submit_button('Confirm target variable and class')
+      
+      if submitted_2 == True:
+        submitted_2_ref = st.session_state['submitted_2_ref'] = True
+      else:
+        submitted_2_ref = st.session_state['submitted_2_ref'] = False
+      
+      if submitted_2_ref == True:
+        if unassigned_count_2 > 0:
+          st.error('Detected target variable/target class without selection', icon = '🛑')
+        else:
+          st.write('✅ — Target variable assignment complete!') # Guarded execution block (layer 3)
 
-      # Test output
-      st.dataframe(train.head())
-      st.write(col_names)
-      st.write(col_types)
-      st.write(train[train.columns[0]].value_counts())
+          # Test output
+          st.dataframe(train.head())
+          st.write(col_names)
+          st.write(col_types)
 
 else:
   st.subheader('No file upload detected')
