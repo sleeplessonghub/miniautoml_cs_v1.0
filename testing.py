@@ -280,7 +280,7 @@ if st.session_state['df_pp'] is not None:
       st.dataframe(train.head())
       st.write(col_names)
       st.write(col_types)
-      train.info()
+      st.dataframe(train.describe())
 
 else:
   st.subheader('No file upload detected')
