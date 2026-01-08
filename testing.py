@@ -17,6 +17,7 @@ if 'file_name_ref' not in st.session_state:
   st.session_state['file_name_ref'] = None
 if 'submitted_ref' not in st.session_state:
   st.session_state['submitted_ref'] = False
+  submitted_ref = st.session_state['submitted_ref']
 
 # Dataset upload and conversion to a pandas dataframe
 uploaded_file = st.file_uploader("Upload a '.csv' or '.xlsx' file", type = ['csv', 'xlsx'], accept_multiple_files = False)
