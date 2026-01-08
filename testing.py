@@ -307,6 +307,8 @@ if st.session_state['df_pp'] is not None:
       train_info = pd.DataFrame({'Variables': train.columns, 'Non-Null Count': train.count(numeric_only = False), 'Data Type': train.dtypes}).reset_index(drop = True)
       st.dataframe(train_info, hide_index = True)
       unassigned_count_2 = 0
+      target = None
+      target_class = None
       is_object = None
       with st.form('target_variable_selection_form'):
         st.write(tw.dedent(
@@ -315,23 +317,25 @@ if st.session_state['df_pp'] is not None:
 
             * 'object' variables are either Ordinal/Nominal according to the previous type specification
             * Categorical target variables are always treated as Nominal
-            * One-vs-Rest (OvR) encoding would be applied to categorical target variables with more than 2 classes
+            * One-vs-Rest (OvR) encoding would be applied to categorical targets with more than 2 classes
             * User must select a class 1 label for the chosen categorical target variable's classes
             """
         ).strip())
-        target = st.selectbox((train.columns.tolist().insert(0, '-')), label_visibility = 'hidden', accept_new_options = False)
+        target_options = ['-'] + train.columns.tolist()
+        target = st.selectbox('Select a target variable:', (target_options), label_visibility = 'hidden', accept_new_options = False)
         if target == '-':
           unassigned_count_2 = unassigned_count_2 + 1
-        if train[target].dtypes == float or train[target].dtypes == int:
-          is_object = False
-          submitted_2 = st.form_submit_button('Confirm target variable')
-        elif train[target].dtypes == object:
-          st.write(train[target].value_counts())
-          target_class = st.selectbox('Select a class 1 label:', (train[target].unique().tolist().insert(0, '-')), accept_new_options = False)
-          if target_class == '-':
-            unassigned_count_2 = unassigned_count_2 + 1
-          is_object = True
-          submitted_2 = st.form_submit_button('Confirm target variable and class')
+        if target != '-':
+          if train[target].dtypes == float or train[target].dtypes == int:
+            is_object = False
+          elif train[target].dtypes == object:
+            st.write(train[target].value_counts())
+            target_class_options = ['-'] + train[target].unique().tolist()
+            target_class = st.selectbox('Select a class 1 label:', (target_class_options), accept_new_options = False)
+            if target_class == '-':
+              unassigned_count_2 = unassigned_count_2 + 1
+            is_object = True
+        submitted_2 = st.form_submit_button('Confirm target assignment')
       
       if submitted_2 == True:
         submitted_2_ref = st.session_state['submitted_2_ref'] = True
