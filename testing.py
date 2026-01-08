@@ -5,17 +5,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import textwrap as tw
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import PowerTransformer
 
 # Title call
 st.title('Mini AutoML (Cross-Sectional) v1.0')
 
 # Session state initializations
 if 'df_pp' not in st.session_state:
-  st.session_state['df_pp'] = None
-if 'file_name_ref' not in st.session_state:
-  st.session_state['file_name_ref'] = None
+  st.session_state['df_pp'] = None # Layer 1 check
 if 'submitted_ref' not in st.session_state:
-  st.session_state['submitted_ref'] = None
+  st.session_state['submitted_ref'] = None # Layer 2 check
 
 # Dataset upload and conversion to a pandas dataframe
 uploaded_file = st.file_uploader("Upload a '.csv' or '.xlsx' file", type = ['csv', 'xlsx'], accept_multiple_files = False)
@@ -23,22 +22,19 @@ if uploaded_file:
   try:
     if uploaded_file.name.endswith('.csv'):
       st.session_state['df_pp'] = pd.read_csv(uploaded_file)
-      st.session_state['file_name_ref'] = uploaded_file.name
     elif uploaded_file.name.endswith('.xlsx'):
       st.session_state['df_pp'] = pd.read_excel(uploaded_file)
-      st.session_state['file_name_ref'] = uploaded_file.name
   except:
     st.error("Uploaded file format must be in either '.csv' or '.xlsx'", icon = '🛑')
-  st.warning('Warning: do not delete uploaded file during the analysis', icon - '⚠️')
+  st.warning('Warning: do not delete the uploaded file during analysis', icon = '⚠️')
 else:
   st.info('Upload a file of the requested format from local to begin the analysis', icon = 'ℹ️')
 
 # Guarded execution block (layer 1)
 if st.session_state['df_pp'] is not None:
 
-  # Session state variable assignments
+  # Session state variable assignment
   df_pp = st.session_state['df_pp']
-  file_name_ref = st.session_state['file_name_ref']
 
   # Dataset unusable column cleaning
   original_columns = [col for col in df_pp.columns]
@@ -142,7 +138,7 @@ if st.session_state['df_pp'] is not None:
       st.write(f'⋯ {len(test)} rows left for testing set post-train/test split!')
 
       # Dataset cell missingness handling
-      placeholder = 9898989898 # Placeholder value, extremely unlikely to naturally occur in real-world datasets
+      placeholder = 0123456789 # Placeholder value, unlikely to naturally occur in real-world datasets
       df_pp_rows_w_nan = df_pp.isna().any(axis = 1).sum()
       percent_missing = df_pp_rows_w_nan / len(df_pp)
       central_tend_dict = dict()
@@ -275,12 +271,53 @@ if st.session_state['df_pp'] is not None:
       for index, value in enumerate(col_types):
         if value == 'Float' or value == 'Integer':
           col_names_num.append(col_names[index])
+      
+      # Outlier handling and power transformation
+      transformer = PowerTransformer(method = 'yeo-johnson', standardize = False)
+      train_cutoff_dict_low = dict()
+      train_cutoff_dict_high = dict()
+      skew = 0
+      kurt_fish = 0
+      for index, value in enumerate(col_names_num):
+        train_cutoff_dict_low[col_names_num[index]] = train[col_names_num[index]].quantile(0.0015)
+        train_cutoff_dict_high[col_names_num[index]] = train[col_names_num[index]].quantile(0.9985)
+        skew = train[col_names_num[index]].skew()
+        kurt_fish = train[col_names_num[index]].kurtosis()
+        if kurt_fish >= 3.00:
+          train = train[train[col_names_num[index]] > train_cutoff_dict_low.get(col_names_num[index])]
+          train = train[train[col_names_num[index]] < train_cutoff_dict_high.get(col_names_num[index])]
+          if abs(skew) >= 1.00:
+            train[col_names_num[index]] = transformer.fit_transform(train[[col_names_num[index]]]).flatten()
+            test[col_names_num[index]] = transformer.transform(test[[col_names_num[index]]]).flatten()
+        elif abs(skew) >= 1.00:
+          train[col_names_num[index]] = transformer.fit_transform(train[[col_names_num[index]]]).flatten()
+          test[col_names_num[index]] = transformer.transform(test[[col_names_num[index]]]).flatten()
+      
+      train.reset_index(drop = True, inplace = True)
+      test.reset_index(drop = True, inplace = True)
+      if kurt_fish or skew:
+        st.write('✅ — Dataset outlier handling complete!')
+        st.write(f'⋯ {len(train)} rows left for training set post-outlier handling!')
+        st.write(f'⋯ {len(test)} rows left for testing set post-outlier handling!')
+
+      # Target variable selection
+      st.write('Select a target variable for machine learning from the list of available variables:')
+      train_info = pd.DataFrame({'Column': train.columns, 'Non-Null Count': train.count(numeric_only = False), 'Data Type': train.dtypes})
+      st.dataframe(train_info)
+      with st.form('target_variable_selection_form'):
+        st.write(tw.dedent(
+            """
+            * 'Object' variables are either ordinal/nominal according to the previous user specification
+            * Categorical target variables are always treated as nominal
+            * One-vs-All (OvA) encoding would be applied to categorical target variables with multiple classes
+            * User must select a target class for both of the non-OVA and OvA-encoded categorical target variable
+            """
+        ).strip())
 
       # Test output
       st.dataframe(train.head())
       st.write(col_names)
       st.write(col_types)
-      st.dataframe(train.describe())
 
 else:
   st.subheader('No file upload detected')
