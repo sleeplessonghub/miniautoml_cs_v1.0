@@ -27,10 +27,10 @@ if uploaded_file:
     elif uploaded_file.name.endswith('.xlsx'):
       st.session_state['df_pp'] = pd.read_excel(uploaded_file)
   except:
-    st.error("Error: uploaded file format must be in either '.csv' or '.xlsx'!", icon = '🛑')
-  st.warning('Warning: do not delete the uploaded file during analysis!', icon = '🚧')
+    st.error("Uploaded file format must be in either '.csv' or '.xlsx'!", icon = '🛑')
+  st.warning('Do not delete the uploaded file during analysis!', icon = '🚧')
 else:
-  st.info('Info: upload a file of the requested format from your local device to begin the analysis!', icon = 'ℹ️')
+  st.info('Upload a file of the requested format from your device to begin the analysis!', icon = 'ℹ️')
 
 # Guarded execution block (layer 1)
 if st.session_state['df_pp'] is not None:
@@ -52,9 +52,9 @@ if st.session_state['df_pp'] is not None:
     if col != col.strip():
       df_pp.rename(columns = {col: col.strip()}, inplace = True)
 
-  # Dataset's variable type specification setup
+  # Dataset variable type specification
   st.subheader('---- SETUP ----')
-  st.write('✅ — Dataset upload and conversion to pandas dataframe complete!')
+  st.write('✅ — Dataset upload and conversion to a pandas dataframe complete!')
   st.write('✅ — Dataset unusable column and white space cleaning complete!')
   st.write('Dataset Preview:')
   st.dataframe(df_pp.head())
@@ -92,10 +92,10 @@ if st.session_state['df_pp'] is not None:
 
   if submitted_ref == True:
     if unassigned_count > 0:
-      st.error('Detected at least 1 column without data type specification', icon = '🛑')
+      st.error('Detected at least 1 column without data type specification!', icon = '🛑')
       submitted_ref = False
     elif id_count >= 2:
-      st.error("'Identification' label has been assigned to 2 or more columns", icon = '🛑')
+      st.error("'Identification' label has been assigned to 2 or more columns!", icon = '🛑')
       submitted_ref = False
     else:
       st.write('✅ — Dataset variable type specification complete!') # Guarded execution block (layer 2)
@@ -264,7 +264,7 @@ if st.session_state['df_pp'] is not None:
       if percent_missing > 0:
         st.write('✅ — Dataset missingness handling complete!')
         if percent_missing > 0.2:
-          st.warning(f'Warning: large missingness detected, imputed missingness rows make up {percent_missing * 100:.2f}% of total rows', icon = '⚠️')
+          st.warning(f'Warning: large missingness detected, imputed missingness rows make up {percent_missing * 100:.2f}% of total rows!', icon = '⚠️')
           st.write(f'⋯ {len(train)} rows left for training set post-missingness handling!')
           st.write(f'⋯ {len(test)} rows left for testing set post-missingness handling!')
       
@@ -344,7 +344,7 @@ if st.session_state['df_pp'] is not None:
       
       if submitted_2_ref == True:
         if unassigned_count_2 > 0:
-          st.error('Detected target variable/target class without selection', icon = '🛑')
+          st.error('Detected target variable/class dropdown without selection!', icon = '🛑')
         else:
           st.write('✅ — Target variable assignment complete!') # Guarded execution block (layer 3)
 
