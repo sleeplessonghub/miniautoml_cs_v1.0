@@ -61,7 +61,7 @@ if st.session_state['df_pp'] is not None:
       df_pp.rename(columns = {col: col.strip()}, inplace = True)
 
   # Dataset variable type specification
-  st.subheader('⸻ Setup Wizard 🪄')
+  st.header('⸻ Setup Wizard 🪄')
   st.write('✅ — Dataset upload and conversion to a pandas dataframe complete!')
   st.write('✅ — Dataset unusable column and white space cleaning complete!')
   st.write('Dataset Preview:')
@@ -485,7 +485,7 @@ if st.session_state['df_pp'] is not None:
 
           # Executing machine learning algorithms and evaluation metrics
           st.divider()
-          st.subheader('⸻ Machine Learning 📊')
+          st.header('⸻ Machine Learning 📊')
 
           if is_object == False: # Regression modeling
 
@@ -520,6 +520,9 @@ if st.session_state['df_pp'] is not None:
             st.write('✅ — Extreme gradient boosting regressor fitted!')
 
             # Regression report
+            st.space(size = "small")
+            st.subheader('Output Statistics')
+            
             st.text(tw.dedent(
                 f'''
                 > Models Used
@@ -611,6 +614,9 @@ if st.session_state['df_pp'] is not None:
             st.write('✅ — Extreme gradient boosting classifier (undersampled) fitted!')
 
             # Classification report
+            st.space(size = "small")
+            st.subheader('Output Statistics')
+            
             st.text(tw.dedent(
                 f'''
                 > Models Used
