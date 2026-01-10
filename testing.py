@@ -641,7 +641,7 @@ if st.session_state['df_pp'] is not None:
 
             st.write('---- Classification Reports (Test Set Predictions)')
             st.write('• Logistic Regression:')
-            st.code(logit_metrics, language = None, width = 500)
+            st.code(logit_metrics, language = None, width = 600)
             st.write('• Logistic Regression (Undersampled):')
             st.code(logit_rs_metrics, language = None, width = 'content')
             st.write('• DT Classifier:')
