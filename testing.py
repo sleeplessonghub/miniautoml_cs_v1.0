@@ -611,7 +611,7 @@ if st.session_state['df_pp'] is not None:
             st.write('✅ — Extreme gradient boosting classifier (undersampled) fitted!')
 
             # Classification report
-            st.text(tw.dedent(
+            st.markdown(tw.dedent(
                 f'''
                 **> Models Used**
                 
