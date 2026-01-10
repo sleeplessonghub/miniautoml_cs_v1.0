@@ -28,7 +28,7 @@ if uploaded_file:
       st.session_state['df_pp'] = pd.read_excel(uploaded_file)
   except:
     st.error("Error: uploaded file format must be in either '.csv' or '.xlsx'!", icon = '🛑')
-  st.warning('Warning: do not delete the uploaded file during analysis!', icon = '⚠️')
+  st.warning('Warning: do not delete the uploaded file during analysis!', icon = '🚧')
 else:
   st.info('Info: upload a file of the requested format from your local device to begin the analysis!', icon = 'ℹ️')
 
