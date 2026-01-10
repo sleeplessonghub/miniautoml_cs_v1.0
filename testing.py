@@ -614,7 +614,6 @@ if st.session_state['df_pp'] is not None:
             st.text(tw.dedent(
                 f'''
                 > Models Used
-
                 • Linear Model — Logistic Regression
                 • Tree-Based Model — Decision Tree Classifier (DT)
                 • Ensemble Model — Extreme Gradient Boosting Classifier (XGB)
@@ -643,15 +642,15 @@ if st.session_state['df_pp'] is not None:
             st.write('• Logistic Regression:')
             st.code(logit_metrics, language = None, width = 513)
             st.write('• Logistic Regression (Undersampled):')
-            st.code(logit_rs_metrics, language = None, width = 'content')
+            st.code(logit_rs_metrics, language = None, width = 513)
             st.write('• DT Classifier:')
-            st.code(dt_class_metrics, language = None, width = 'content')
+            st.code(dt_class_metrics, language = None, width = 513)
             st.write('• DT Classifier (Undersampled):')
-            st.code(dt_class_rs_metrics, language = None, width = 'content')
+            st.code(dt_class_rs_metrics, language = None, width = 513)
             st.write('• XGB Classifier:')
-            st.code(xgb_class_metrics, language = None, width = 'content')
+            st.code(xgb_class_metrics, language = None, width = 513)
             st.write('• XGB Classifier (Undersampled):')
-            st.code(xgb_class_rs_metrics, language = None, width = 'content')
+            st.code(xgb_class_rs_metrics, language = None, width = 513)
 
           # E
 
