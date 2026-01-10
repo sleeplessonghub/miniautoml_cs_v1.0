@@ -1,3 +1,4 @@
+# Dependency imports
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -9,6 +10,10 @@ from sklearn.preprocessing import PowerTransformer, OneHotEncoder, TargetEncoder
 from imblearn.under_sampling import RandomUnderSampler
 from statsmodels.stats.outliers_influence import variance_inflation_factor as vif
 from statsmodels.tools.tools import add_constant
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
+import xgboost as xgb
+from sklearn.metrics import r2_score, root_mean_squared_error, mean_absolute_error, mean_absolute_percentage_error, classification_report
 
 # Title call
 st.title('Mini AutoML (Cross-Sectional) v1.0')
@@ -286,6 +291,7 @@ if st.session_state['df_pp'] is not None:
       train_cutoff_dict_high = dict()
       skew = 0
       kurt_fish = 0
+      outlier_handling_check = 0
       for index, value in enumerate(col_names_num):
         train_cutoff_dict_low[col_names_num[index]] = train[col_names_num[index]].quantile(0.0015)
         train_cutoff_dict_high[col_names_num[index]] = train[col_names_num[index]].quantile(0.9985)
@@ -294,16 +300,19 @@ if st.session_state['df_pp'] is not None:
         if kurt_fish >= 3.00:
           train = train[train[col_names_num[index]] > train_cutoff_dict_low.get(col_names_num[index])]
           train = train[train[col_names_num[index]] < train_cutoff_dict_high.get(col_names_num[index])]
+          outlier_handling_check = outlier_handling_check + 1
           if abs(skew) >= 1.00:
             train[col_names_num[index]] = transformer.fit_transform(train[[col_names_num[index]]]).flatten()
             test[col_names_num[index]] = transformer.transform(test[[col_names_num[index]]]).flatten()
+            outlier_handling_check = outlier_handling_check + 1
         elif abs(skew) >= 1.00:
           train[col_names_num[index]] = transformer.fit_transform(train[[col_names_num[index]]]).flatten()
           test[col_names_num[index]] = transformer.transform(test[[col_names_num[index]]]).flatten()
+          outlier_handling_check = outlier_handling_check + 1
       
       train.reset_index(drop = True, inplace = True)
       test.reset_index(drop = True, inplace = True)
-      if kurt_fish or skew:
+      if outlier_handling_check > 0:
         st.write('✅ — Dataset outlier handling complete!')
         st.write(f'⋯ {len(train)} rows left for training set post-outlier handling!')
         st.write(f'⋯ {len(test)} rows left for testing set post-outlier handling!')
@@ -473,6 +482,176 @@ if st.session_state['df_pp'] is not None:
             if resampled == True:
               feature_train_balanced.drop(columns = col_names_num_vif, inplace = True)
             st.write('✅ — VIF multicollinearity diagnostic complete!')
+
+          # Executing machine learning algorithms and evaluation metrics
+          st.divider()
+          st.subheader('⸻ Machine Learning 🤖')
+
+          if is_object == False: # Regression modeling
+
+            # Linear model, linear regression
+            ln = LinearRegression()
+            ln.fit(feature_train, target_train)
+            ln_pred = ln.predict(feature_test)
+            r2_ln = r2_score(target_test, ln_pred)
+            rmse_ln = root_mean_squared_error(target_test, ln_pred)
+            mae_ln = mean_absolute_error(target_test, ln_pred)
+            mape_ln = mean_absolute_percentage_error(target_test, ln_pred)
+            st.write('✅ — Linear regression fitted!')
+
+            # Tree-based model, decision tree regressor
+            dt_reg = DecisionTreeRegressor(random_state = 42)
+            dt_reg.fit(feature_train, target_train)
+            dt_reg_pred = dt_reg.predict(feature_test)
+            r2_dt_reg = r2_score(target_test, dt_reg_pred)
+            rmse_dt_reg = root_mean_squared_error(target_test, dt_reg_pred)
+            mae_dt_reg = mean_absolute_error(target_test, dt_reg_pred)
+            mape_dt_reg = mean_absolute_percentage_error(target_test, dt_reg_pred)
+            st.write('✅ — Decision tree regressor fitted!')
+
+            # Ensemble model, extreme gradient boosting regressor
+            xgb_reg = xgb.XGBRegressor(random_state = 42)
+            xgb_reg.fit(feature_train, target_train)
+            xgb_reg_pred = xgb_reg.predict(feature_test)
+            r2_xgb_reg = r2_score(target_test, xgb_reg_pred)
+            rmse_xgb_reg = root_mean_squared_error(target_test, xgb_reg_pred)
+            mae_xgb_reg = mean_absolute_error(target_test, xgb_reg_pred)
+            mape_xgb_reg = mean_absolute_percentage_error(target_test, xgb_reg_pred)
+            st.write('✅ — Extreme gradient boosting regressor fitted!')
+
+            # Regression report
+            st.write(tw.dedent(
+                f'''
+                > Models Used
+
+                • Linear Model — Linear Regression
+                • Tree-Based Model — Decision Tree Regressor (DT)
+                • Ensemble Model — Extreme Gradient Boosting Regressor (XGB)
+
+                > Train/Test Sets Sample Size Check
+
+                • Feature (Train) Sample Size (n): {len(feature_train)}
+                • Target (Train) Sample Size (n): {len(target_train)}
+                • Feature (Test) Sample Size (n): {len(feature_test)}
+                • Target (Test) Sample Size (n): {len(target_test)}
+
+                > Train/Test Sets Dimensionality Check
+
+                • Feature (Train) Column Count: {len(feature_train.columns)}
+                • Target (Train) Column Count: {len(target_train.columns)}
+                • Feature (Test) Column Count: {len(feature_test.columns)}
+                • Target (Test) Column Count: {len(target_test.columns)}
+
+                > Model Fit Evaluation Metrics (Test Set Predictions)
+
+                ---- Coefficient of Determination (R2 Score - Unit: Percentage (%))
+                • Linear Regression - R2 Score: {r2_ln * 100:.4f}%
+                • DT Regressor - R2 Score: {r2_dt_reg * 100:.4f}%
+                • XGB Regressor - R2 Score: {r2_xgb_reg * 100:.4f}%
+
+                ---- Root Mean Squared Error (RMSE - Unit: Z-Score)
+                • Linear Regression - RMSE: {rmse_ln:.4f}
+                • DT Regressor - RMSE: {rmse_dt_reg:.4f}
+                • XGB Regressor - RMSE: {rmse_xgb_reg:.4f}
+
+                ---- Mean Absolute Error (MAE - Unit: Z-Score)
+                • Linear Regression - MAE: {mae_ln:.4f}
+                • DT Regressor - MAE: {mae_dt_reg:.4f}
+                • XGB Regressor - MAE: {mae_xgb_reg:.4f}
+
+                ---- Mean Absolute Percentage Error (MAPE - Unit: Percentage (%))
+                • Linear Regression - MAPE: {mape_ln * 100:.4f}%
+                • DT Regressor - MAPE: {mape_dt_reg * 100:.4f}%
+                • XGB Regressor - MAPE: {mape_xgb_reg * 100:.4f}%
+                '''
+            ).strip())
+          
+          elif is_object == True: # Classification modeling
+
+            # Linear model, logistic regression
+            logit = LogisticRegression(random_state = 42)
+            logit.fit(feature_train, target_train)
+            logit_pred = logit.predict(feature_test)
+            logit_metrics = classification_report(target_test, logit_pred)
+            st.write('✅ — Logistic regression fitted!')
+
+            # Linear model, logistic regression (resampled)
+            logit_rs = LogisticRegression(random_state = 42)
+            logit_rs.fit(feature_train_balanced, target_train_balanced)
+            logit_rs_pred = logit_rs.predict(feature_test)
+            logit_rs_metrics = classification_report(target_test, logit_rs_pred)
+            st.write('✅ — Logistic regression (undersampled) fitted!')
+
+            # Tree-based model, decision tree classifier
+            dt_class = DecisionTreeClassifier(random_state = 42)
+            dt_class.fit(feature_train, target_train)
+            dt_class_pred = dt_class.predict(feature_test)
+            dt_class_metrics = classification_report(target_test, dt_class_pred)
+            st.write('✅ — Decision tree classifier fitted!')
+
+            # Tree-based model, decision tree classifier (resampled)
+            dt_class_rs = DecisionTreeClassifier(random_state = 42)
+            dt_class_rs.fit(feature_train_balanced, target_train_balanced)
+            dt_class_rs_pred = dt_class_rs.predict(feature_test)
+            dt_class_rs_metrics = classification_report(target_test, dt_class_rs_pred)
+            st.write('✅ — Decision tree classifier (undersampled) fitted!')
+
+            # Ensemble model, extreme gradient boosting classifier
+            xgb_class = xgb.XGBClassifier(random_state = 42)
+            xgb_class.fit(feature_train, target_train)
+            xgb_class_pred = xgb_class.predict(feature_test)
+            xgb_class_metrics = classification_report(target_test, xgb_class_pred)
+            st.write('✅ — Extreme gradient boosting classifier fitted!')
+
+            # Ensemble model, extreme gradient boosting classifier (resampled)
+            xgb_class_rs = xgb.XGBClassifier(random_state = 42)
+            xgb_class_rs.fit(feature_train_balanced, target_train_balanced)
+            xgb_class_rs_pred = xgb_class_rs.predict(feature_test)
+            xgb_class_rs_metrics = classification_report(target_test, xgb_class_rs_pred)
+            st.write('✅ — Extreme gradient boosting classifier (undersampled) fitted!')
+
+            # Classification report
+            st.write(tw.dedent(
+                f'''
+                > Models Used
+
+                • Linear Model — Logistic Regression
+                • Tree-Based Model — Decision Tree Classifier (DT)
+                • Ensemble Model — Extreme Gradient Boosting Classifier (XGB)
+
+                > Train/Test Sets Sample Size Check
+
+                • Feature (Train) Sample Size (n): {len(feature_train)}
+                • Target (Train) Sample Size (n): {len(target_train)}
+                • Feature (Train-Balanced) Sample Size (n): {len(feature_train_balanced)}
+                • Target (Train-Balanced) Sample Size (n): {len(target_train_balanced)}
+                • Feature (Test) Sample Size (n): {len(feature_test)}
+                • Target (Test) Sample Size (n): {len(target_test)}
+
+                > Train/Test Sets Dimensionality Check
+
+                • Feature (Train) Column Count: {len(feature_train.columns)}
+                • Target (Train) Column Count: {len(target_train.columns)}
+                • Feature (Train-Balanced) Column Count: {len(feature_train_balanced.columns)}
+                • Target (Train-Balanced) Column Count: {len(target_train_balanced.columns)}
+                • Feature (Test) Column Count: {len(feature_test.columns)}
+                • Target (Test) Column Count: {len(target_test.columns)}
+                '''
+            ).strip())
+
+            st.write('---- Classification Reports (Test Set Predictions)')
+            st.write('• Logistic Regression:')
+            st.write(logit_metrics)
+            st.write('• Logistic Regression (Undersampled):')
+            st.write(logit_rs_metrics)
+            st.write('• DT Classifier:')
+            st.write(dt_class_metrics)
+            st.write('• DT Classifier (Undersampled):')
+            st.write(dt_class_rs_metrics)
+            st.write('• XGB Classifier:')
+            st.write(xgb_class_metrics)
+            st.write('• XGB Classifier (Undersampled):')
+            st.write(xgb_class_rs_metrics)
 
           # Test output
           st.dataframe(feature_train.head())
