@@ -520,7 +520,7 @@ if st.session_state['df_pp'] is not None:
             st.write('✅ — Extreme gradient boosting regressor fitted!')
 
             # Regression report
-            st.space(size = 1)
+            # st.space(size = 'small')
             st.subheader('Output Statistics')
             
             st.text(tw.dedent(
@@ -614,7 +614,7 @@ if st.session_state['df_pp'] is not None:
             st.write('✅ — Extreme gradient boosting classifier (undersampled) fitted!')
 
             # Classification report
-            st.space(size = 1)
+            # st.space(size = 'small')
             st.subheader('Output Statistics')
             
             st.text(tw.dedent(
