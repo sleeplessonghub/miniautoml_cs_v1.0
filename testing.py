@@ -264,7 +264,7 @@ if st.session_state['df_pp'] is not None:
       if percent_missing > 0:
         st.write('✅ — Dataset missingness handling complete!')
         if percent_missing > 0.2:
-          st.warning(f'Warning: large missingness detected, imputed missingness rows make up {percent_missing * 100:.2f}% of total rows!', icon = '⚠️')
+          st.warning(f'Warning: large missingness detected, imputed missingness rows make up {percent_missing * 100:.2f}% of total rows!', icon = '🚧')
           st.write(f'⋯ {len(train)} rows left for training set post-missingness handling!')
           st.write(f'⋯ {len(test)} rows left for testing set post-missingness handling!')
       
