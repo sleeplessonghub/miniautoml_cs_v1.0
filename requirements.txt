@@ -5,6 +5,7 @@ numpy
 matplotlib
 seaborn
 scikit-learn
+scikit-learn-intelex
 imblearn
 statsmodels
 xgboost
