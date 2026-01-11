@@ -56,7 +56,10 @@ if st.session_state['df_pp'] is not None:
   original_columns_2 = [col for col in df_pp.columns]
   for col in original_columns_2:
     if df_pp[col].dtypes == object:
+      df_pp[col] = df_pp[col].astype('string') # Bug fix, sometimes boolean can't pass as string
       df_pp[col] = df_pp[col].str.strip()
+      df_pp[col] = df_pp[col].astype(object)
+      df_pp[col] = df_pp[col].replace(pd.NA, np.nan)
     if col != col.strip():
       df_pp.rename(columns = {col: col.strip()}, inplace = True)
 
@@ -661,4 +664,3 @@ if st.session_state['df_pp'] is not None:
 
 else:
   st.subheader('No file upload detected')
-  
