@@ -10,11 +10,8 @@ from sklearn.preprocessing import PowerTransformer, OneHotEncoder, TargetEncoder
 from imblearn.under_sampling import RandomUnderSampler
 from statsmodels.stats.outliers_influence import variance_inflation_factor as vif
 from statsmodels.tools.tools import add_constant
-from sklearnex import patch_sklearn
-patch_sklearn()
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
-import daal4py as d4p
 import xgboost as xgb
 from sklearn.metrics import r2_score, root_mean_squared_error, mean_absolute_error, mean_absolute_percentage_error, classification_report
 
@@ -516,13 +513,9 @@ if st.session_state['df_pp'] is not None:
             st.write('✅ — Decision tree regressor fitted!')
 
             # Ensemble model, extreme gradient boosting regressor
-            xgb_reg = xgb.XGBRegressor(tree_method = 'hist', n_jobs = -1, random_state = 42)
+            xgb_reg = xgb.XGBRegressor(random_state = 42)
             xgb_reg.fit(feature_train, target_train)
-            xgb_reg_op = d4p.mb.convert_model(xgb_reg.get_booster())
-            try:
-              xgb_reg_pred = xgb_reg_op.predict(feature_test.values).flatten()
-            except:
-              xgb_reg_pred = xgb_reg.predict(feature_test)
+            xgb_reg_pred = xgb_reg.predict(feature_test)
             r2_xgb_reg = r2_score(target_test, xgb_reg_pred)
             rmse_xgb_reg = root_mean_squared_error(target_test, xgb_reg_pred)
             mae_xgb_reg = mean_absolute_error(target_test, xgb_reg_pred)
@@ -609,24 +602,16 @@ if st.session_state['df_pp'] is not None:
             st.write('✅ — Decision tree classifier (undersampled) fitted!')
 
             # Ensemble model, extreme gradient boosting classifier
-            xgb_class = xgb.XGBClassifier(tree_method = 'hist', n_jobs = -1, random_state = 42)
+            xgb_class = xgb.XGBClassifier(random_state = 42)
             xgb_class.fit(feature_train, target_train)
-            xgb_class_op = d4p.mb.convert_model(xgb_class.get_booster())
-            try:
-              xgb_class_pred = xgb_class_op.predict(feature_test.values).flatten()
-            except:
-              xgb_class_pred = xgb_class.predict(feature_test)
+            xgb_class_pred = xgb_class.predict(feature_test)
             xgb_class_metrics = classification_report(target_test, xgb_class_pred)
             st.write('✅ — Extreme gradient boosting classifier fitted!')
 
             # Ensemble model, extreme gradient boosting classifier (resampled)
-            xgb_class_rs = xgb.XGBClassifier(tree_method = 'hist', n_jobs = -1, random_state = 42)
+            xgb_class_rs = xgb.XGBClassifier(random_state = 42)
             xgb_class_rs.fit(feature_train_balanced, target_train_balanced)
-            xgb_class_rs_op = d4p.mb.convert_model(xgb_class_rs.get_booster())
-            try:
-              xgb_class_rs_pred = xgb_class_rs_op.predict(feature_test.values).flatten()
-            except:
-              xgb_class_rs_pred = xgb_class_rs.predict(feature_test)
+            xgb_class_rs_pred = xgb_class_rs.predict(feature_test)
             xgb_class_rs_metrics = classification_report(target_test, xgb_class_rs_pred)
             st.write('✅ — Extreme gradient boosting classifier (undersampled) fitted!')
 
