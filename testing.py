@@ -10,6 +10,8 @@ from sklearn.preprocessing import PowerTransformer, OneHotEncoder, TargetEncoder
 from imblearn.under_sampling import RandomUnderSampler
 from statsmodels.stats.outliers_influence import variance_inflation_factor as vif
 from statsmodels.tools.tools import add_constant
+from sklearnex import patch_sklearn
+patch_sklearn()
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
 import xgboost as xgb
