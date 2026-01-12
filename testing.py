@@ -12,7 +12,7 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor as vi
 from statsmodels.tools.tools import add_constant
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
-import xgboost as xgb
+import lightgbm as lgbm
 from sklearn.metrics import r2_score, root_mean_squared_error, mean_absolute_error, mean_absolute_percentage_error, classification_report
 
 # Title call
@@ -512,15 +512,15 @@ if st.session_state['df_pp'] is not None:
             mape_dt_reg = mean_absolute_percentage_error(target_test, dt_reg_pred)
             st.write('✅ — Decision tree regressor fitted!')
 
-            # Ensemble model, extreme gradient boosting regressor
-            xgb_reg = xgb.XGBRegressor(tree_method = 'hist', n_jobs = -1, random_state = 42)
-            xgb_reg.fit(feature_train, target_train)
-            xgb_reg_pred = xgb_reg.predict(feature_test)
-            r2_xgb_reg = r2_score(target_test, xgb_reg_pred)
-            rmse_xgb_reg = root_mean_squared_error(target_test, xgb_reg_pred)
-            mae_xgb_reg = mean_absolute_error(target_test, xgb_reg_pred)
-            mape_xgb_reg = mean_absolute_percentage_error(target_test, xgb_reg_pred)
-            st.write('✅ — Extreme gradient boosting regressor fitted!')
+            # Ensemble model, light gradient boosting machine regressor
+            lgbm_reg = lgbm.LGBMRegressor(random_state = 42, n_jobs = -1)
+            lgbm_reg.fit(feature_train, target_train)
+            lgbm_reg_pred = lgbm_reg.predict(feature_test)
+            r2_lgbm_reg = r2_score(target_test, lgbm_reg_pred)
+            rmse_lgbm_reg = root_mean_squared_error(target_test, lgbm_reg_pred)
+            mae_lgbm_reg = mean_absolute_error(target_test, lgbm_reg_pred)
+            mape_lgbm_reg = mean_absolute_percentage_error(target_test, lgbm_reg_pred)
+            st.write('✅ — Light gradient boosting machine regressor fitted!')
 
             # Regression report
             st.write('#### Output Statistics')
@@ -531,7 +531,7 @@ if st.session_state['df_pp'] is not None:
 
                 • Linear Model — Linear Regression
                 • Tree-Based Model — Decision Tree Regressor (DT)
-                • Ensemble Model — Extreme Gradient Boosting Regressor (XGB)
+                • Ensemble Model — Light Gradient Boosting Machine Regressor (LGBM)
 
                 > Train/Test Sets Sample Size Check
 
@@ -552,22 +552,22 @@ if st.session_state['df_pp'] is not None:
                 ---- Coefficient of Determination (R2 Score - Unit: Percentage)
                 • Linear Regression - R2 Score: {r2_ln * 100:.2f}%
                 • DT Regressor - R2 Score: {r2_dt_reg * 100:.2f}%
-                • XGB Regressor - R2 Score: {r2_xgb_reg * 100:.2f}%
+                • LGBM Regressor - R2 Score: {r2_lgbm_reg * 100:.2f}%
 
                 ---- Root Mean Squared Error (RMSE - Unit: Z-Score)
                 • Linear Regression - RMSE: {rmse_ln:.4f}
                 • DT Regressor - RMSE: {rmse_dt_reg:.4f}
-                • XGB Regressor - RMSE: {rmse_xgb_reg:.4f}
+                • LGBM Regressor - RMSE: {rmse_lgbm_reg:.4f}
 
                 ---- Mean Absolute Error (MAE - Unit: Z-Score)
                 • Linear Regression - MAE: {mae_ln:.4f}
                 • DT Regressor - MAE: {mae_dt_reg:.4f}
-                • XGB Regressor - MAE: {mae_xgb_reg:.4f}
+                • LGBM Regressor - MAE: {mae_lgbm_reg:.4f}
 
                 ---- Mean Absolute Percentage Error (MAPE - Unit: Percentage)
                 • Linear Regression - MAPE: {mape_ln * 100:.2f}%
                 • DT Regressor - MAPE: {mape_dt_reg * 100:.2f}%
-                • XGB Regressor - MAPE: {mape_xgb_reg * 100:.2f}%
+                • LGBM Regressor - MAPE: {mape_lgbm_reg * 100:.2f}%
                 '''
             ).strip())
           
@@ -601,19 +601,19 @@ if st.session_state['df_pp'] is not None:
             dt_class_rs_metrics = classification_report(target_test, dt_class_rs_pred)
             st.write('✅ — Decision tree classifier (undersampled) fitted!')
 
-            # Ensemble model, extreme gradient boosting classifier
-            xgb_class = xgb.XGBClassifier(tree_method = 'hist', n_jobs = -1, random_state = 42)
-            xgb_class.fit(feature_train, target_train)
-            xgb_class_pred = xgb_class.predict(feature_test)
-            xgb_class_metrics = classification_report(target_test, xgb_class_pred)
-            st.write('✅ — Extreme gradient boosting classifier fitted!')
+            # Ensemble model, light gradient boosting machine classifier
+            lgbm_class = lgbm.LGBMClassifier(random_state = 42, n_jobs = -1)
+            lgbm_class.fit(feature_train, target_train)
+            lgbm_class_pred = lgbm_class.predict(feature_test)
+            lgbm_class_metrics = classification_report(target_test, lgbm_class_pred)
+            st.write('✅ — Light gradient boosting machine classifier fitted!')
 
-            # Ensemble model, extreme gradient boosting classifier (resampled)
-            xgb_class_rs = xgb.XGBClassifier(tree_method = 'hist', n_jobs = -1, random_state = 42)
-            xgb_class_rs.fit(feature_train_balanced, target_train_balanced)
-            xgb_class_rs_pred = xgb_class_rs.predict(feature_test)
-            xgb_class_rs_metrics = classification_report(target_test, xgb_class_rs_pred)
-            st.write('✅ — Extreme gradient boosting classifier (undersampled) fitted!')
+            # Ensemble model, light gradient boosting machine classifier (resampled)
+            lgbm_class_rs = lgbm.LGBMClassifier(random_state = 42, n_jobs = -1)
+            lgbm_class_rs.fit(feature_train_balanced, target_train_balanced)
+            lgbm_class_rs_pred = lgbm_class_rs.predict(feature_test)
+            lgbm_class_rs_metrics = classification_report(target_test, lgbm_class_rs_pred)
+            st.write('✅ — Light gradient boosting machine classifier (undersampled) fitted!')
 
             # Classification report
             st.write('#### Output Statistics')
@@ -624,7 +624,7 @@ if st.session_state['df_pp'] is not None:
                 
                 • Linear Model — Logistic Regression
                 • Tree-Based Model — Decision Tree Classifier (DT)
-                • Ensemble Model — Extreme Gradient Boosting Classifier (XGB)
+                • Ensemble Model — Light Gradient Boosting Machine Classifier (LGBM)
 
                 > Train/Test Sets Sample Size Check
 
@@ -655,10 +655,10 @@ if st.session_state['df_pp'] is not None:
             st.code(dt_class_metrics, language = None, width = 513)
             st.write('• DT Classifier (Undersampled):')
             st.code(dt_class_rs_metrics, language = None, width = 513)
-            st.write('• XGB Classifier:')
-            st.code(xgb_class_metrics, language = None, width = 513)
-            st.write('• XGB Classifier (Undersampled):')
-            st.code(xgb_class_rs_metrics, language = None, width = 513)
+            st.write('• LGBM Classifier:')
+            st.code(lgbm_class_metrics, language = None, width = 513)
+            st.write('• LGBM Classifier (Undersampled):')
+            st.code(lgbm_class_rs_metrics, language = None, width = 513)
 
           # E
 
