@@ -514,7 +514,7 @@ if st.session_state['df_pp'] is not None:
 
             # Ensemble model, light gradient boosting machine regressor
             lgbm_reg = lgbm.LGBMRegressor(random_state = 42, n_jobs = -1)
-            lgbm_reg.fit(feature_train, target_train)
+            lgbm_reg.fit(feature_train, target_train, callbacks = [early_stopping(stopping_rounds = 5)])
             lgbm_reg_pred = lgbm_reg.predict(feature_test)
             r2_lgbm_reg = r2_score(target_test, lgbm_reg_pred)
             rmse_lgbm_reg = root_mean_squared_error(target_test, lgbm_reg_pred)
@@ -603,14 +603,14 @@ if st.session_state['df_pp'] is not None:
 
             # Ensemble model, light gradient boosting machine classifier
             lgbm_class = lgbm.LGBMClassifier(random_state = 42, n_jobs = -1)
-            lgbm_class.fit(feature_train, target_train)
+            lgbm_class.fit(feature_train, target_train, callbacks = [early_stopping(stopping_rounds = 5)])
             lgbm_class_pred = lgbm_class.predict(feature_test)
             lgbm_class_metrics = classification_report(target_test, lgbm_class_pred)
             st.write('✅ — Light gradient boosting machine classifier fitted!')
 
             # Ensemble model, light gradient boosting machine classifier (resampled)
             lgbm_class_rs = lgbm.LGBMClassifier(random_state = 42, n_jobs = -1)
-            lgbm_class_rs.fit(feature_train_balanced, target_train_balanced)
+            lgbm_class_rs.fit(feature_train_balanced, target_train_balanced, callbacks = [early_stopping(stopping_rounds = 5)])
             lgbm_class_rs_pred = lgbm_class_rs.predict(feature_test)
             lgbm_class_rs_metrics = classification_report(target_test, lgbm_class_rs_pred)
             st.write('✅ — Light gradient boosting machine classifier (undersampled) fitted!')
