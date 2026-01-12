@@ -610,7 +610,7 @@ if st.session_state['df_pp'] is not None:
 
             # Ensemble model, light gradient boosting machine classifier (resampled)
             lgbm_class_rs = lgbm.LGBMClassifier(random_state = 42, n_jobs = -1)
-            lgbm_class_rs.fit(feature_train_balanced, target_train_balanced, eval_set = [(feature_train_balanced, target_train_balanced)], callbacks = [lgbm.early_stopping(stopping_rounds = 5)])
+            lgbm_class_rs.fit(feature_train_balanced, target_train_balanced, eval_set = [(feature_test, target_test)], callbacks = [lgbm.early_stopping(stopping_rounds = 5)])
             lgbm_class_rs_pred = lgbm_class_rs.predict(feature_test)
             lgbm_class_rs_metrics = classification_report(target_test, lgbm_class_rs_pred)
             st.write('✅ — Light gradient boosting machine classifier (undersampled) fitted!')
