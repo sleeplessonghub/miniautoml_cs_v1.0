@@ -615,7 +615,7 @@ if st.session_state['df_pp'] is not None:
             st.write('• Permutation Feature Importance (PFI):')
             pfi = best_model_explainer.model_parts(random_state = 42)
             pfi_fig: go.Figure = pfi.plot(show = False)
-            pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 275,
+            pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 300,
                                                                                 width = None,
                                                                                 autosize = True,
                                                                                 font = dict(size = 10))
