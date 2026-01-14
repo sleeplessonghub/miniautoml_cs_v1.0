@@ -626,7 +626,7 @@ if st.session_state['df_pp'] is not None:
             pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
             pdp_fig: go.Figure = pdp.plot(show = False)
             pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False,
-                                                                                height = 400,
+                                                                                height = 800,
                                                                                 width = None,
                                                                                 autosize = False,
                                                                                 title_x = 0.5)
