@@ -615,11 +615,12 @@ if st.session_state['df_pp'] is not None:
             st.write('• Permutation Feature Importance (PFI):')
             pfi = best_model_explainer.model_parts(random_state = 42)
             pfi_fig: go.Figure = pfi.plot(show = False)
-            pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 325,
+            pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 300,
                                                                                 width = None,
                                                                                 autosize = True,
-                                                                                title_font_size = 14,
-                                                                                font = dict(size = 11))
+                                                                                title_font_size = 20,
+                                                                                font = dict(size = 10),
+                                                                                title_x = 0.5)
             st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
             st.write('• Partial Dependence Plots (PDPs):')
