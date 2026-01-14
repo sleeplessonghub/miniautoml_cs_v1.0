@@ -500,6 +500,8 @@ if st.session_state['df_pp'] is not None:
             # New data check
             if 'file_name_check' not in st.session_state:
               file_name_check = st.session_state['file_name_check'] = None
+            else:
+              file_name_check = st.session_state['file_name_check']
 
             # Linear model, linear regression
             if file_name_check != file_name:
