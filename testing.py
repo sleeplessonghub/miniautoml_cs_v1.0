@@ -619,14 +619,7 @@ if st.session_state['df_pp'] is not None:
                                                                                 width = None,
                                                                                 autosize = True,
                                                                                 title_font_size = 15,
-                                                                                font = dict(size = 11),
-                                                                                title = {
-                                                                                    'text': 'Variable ImportanceE',
-                                                                                    'x': 0.05,
-                                                                                    'y': 0.95,
-                                                                                    'xanchor': 'left',
-                                                                                    'yanchor': 'top'
-                                                                                })
+                                                                                font = dict(size = 11))
             st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
             st.write('• Partial Dependence Plots (PDPs):')
