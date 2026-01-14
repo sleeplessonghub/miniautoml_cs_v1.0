@@ -620,7 +620,7 @@ if st.session_state['df_pp'] is not None:
                                                                                 autosize = True,
                                                                                 title_font_size = 14,
                                                                                 font = dict(size = 10),
-                                                                                title_x = 0.5)
+                                                                                title_x = 0.6)
             st.plotly_chart(pfi_fig_ss, width = 'stretch')
 
             st.write('• Partial Dependence Plots (PDPs):')
