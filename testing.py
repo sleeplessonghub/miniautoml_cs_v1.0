@@ -618,15 +618,15 @@ if st.session_state['df_pp'] is not None:
             pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 325,
                                                                                 width = None,
                                                                                 autosize = True,
-                                                                                font = dict(size = 11),
-                                                                                modebar_remove = ['toImage', 'toggleFullScreen'])
+                                                                                title_font_size = 14,
+                                                                                font = dict(size = 11))
             st.plotly_chart(pfi_fig_ss, width = 'stretch')
 
             st.write('• Partial Dependence Plots (PDPs):')
             pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
             pdp_fig: go.Figure = pdp.plot(show = False)
             pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False, title_x = 0.5, margin = dict(l = 100))
-            st.plotly_chart(pdp_fig_ss, width = 'content')
+            st.plotly_chart(pdp_fig_ss, width = 'content', config = {'displayModeBar': False})
           
           elif is_object == True: # Classification modeling
 
