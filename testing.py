@@ -624,7 +624,7 @@ if st.session_state['df_pp'] is not None:
 
             st.write('• Partial Dependence Plots (PDPs):')
             pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
-            pdp_fig: go.Figure = pdp.plot(show = False).update_yaxes(title_standoff = 40)
+            pdp_fig: go.Figure = pdp.plot(show = False).update_yaxes(title_standoff = -40)
             pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False,
                                                                                 height = 600,
                                                                                 width = None,
