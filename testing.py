@@ -626,7 +626,7 @@ if st.session_state['df_pp'] is not None:
             pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
             pdp_fig: go.Figure = pdp.plot(show = False)
             pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False, title_x = 0.5, margin = dict(l = 100))
-            st.plotly_chart(pdp_fig_ss, width = 'content', config = {'displayModeBar': False})
+            st.plotly_chart(pdp_fig_ss, width = 'content', config = {'displayModeBar': True})
           
           elif is_object == True: # Classification modeling
 
