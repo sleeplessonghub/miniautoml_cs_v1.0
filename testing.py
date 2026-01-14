@@ -632,7 +632,7 @@ if st.session_state['df_pp'] is not None:
                                                                                 title_x = 0.5,
                                                                                 margin = dict(l = 50),
                                                                                 annotations = [],
-                                                                                hoverlabel = dict(bgcolor = 'white', bordercolor = 'white)).update_traces(hovertemplate = '<b>X-Axis: %{x:.4f}</b>' + '<br><b>Class 1 Avg. Z-Score: %{y:.2f}</b><extra></extra>')
+                                                                                hoverlabel = dict(bgcolor = 'white', bordercolor = 'white')).update_traces(hovertemplate = '<b>X-Axis: %{x:.4f}</b>' + '<br><b>Class 1 Avg. Z-Score: %{y:.2f}</b><extra></extra>')
             st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
           
           elif is_object == True: # Classification modeling
