@@ -632,8 +632,10 @@ if st.session_state['df_pp'] is not None:
                                                                                 title_x = 0.5,
                                                                                 margin = dict(l = 50),
                                                                                 hovermode = 'closest',
-                                                                                hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '━ X-Axis Value: <b>%{x:.4f}</b>' + '<br>━ Avg. Target Z-Score: <b>%{y:.4f}</b><extra></extra>')
+                                                                                hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '● X-Axis Value: <b>%{x:.4f}</b>' + '<br>● Avg. Target Z-Score: <b>%{y:.4f}</b><extra></extra>')
             st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
+
+            # To-do: edit PFI plot tooltip for better user experience on bar hover, continue new data check logic (session_state storing of 'pfi_fig_ss' and 'pdp_fig_ss' thus far) for faster ML load
           
           elif is_object == True: # Classification modeling
 
