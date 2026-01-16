@@ -649,7 +649,7 @@ if st.session_state['df_pp'] is not None:
                                                                                   margin = dict(l = 50),
                                                                                   hovermode = 'closest',
                                                                                   hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '⤷ Feature Value: <b>%{x:.4f}</b>' + '<br>⤷ Target Z-Score Pred.: <b>%{y:.4f}</b>' + '<extra></extra>')
-              with st.container(height = st.session_state['pdp_height'], border = False):
+              with st.container(height = st.session_state['pdp_height'] + 50, border = True):
                 st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
               # st.session_state['file_name_check'] = st.session_state['file_name'] # New file name update
@@ -657,7 +657,7 @@ if st.session_state['df_pp'] is not None:
             elif st.session_state['file_name_check'] == st.session_state['file_name']:
 
               st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
-              with st.container(height = st.session_state['pdp_height'], border = False):
+              with st.container(height = st.session_state['pdp_height'] + 50, border = True):
                 st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
           
           elif is_object == True: # Classification modeling
