@@ -520,6 +520,10 @@ if st.session_state['df_pp'] is not None:
               mape_ln = st.session_state['mape_ln'] = mean_absolute_percentage_error(target_test, ln_pred)
               st.write('✅ — Linear regression fitted!')
             elif file_name_check == file_name:
+              r2_ln = st.session_state['r2_ln']
+              rmse_ln = st.session_state['rmse_ln']
+              mae_ln = st.session_state['mae_ln']
+              mape_ln = st.session_state['mape_ln']
               st.write('✅ — Linear regression fitted!')
 
             # Tree-based model, decision tree regressor
@@ -533,6 +537,10 @@ if st.session_state['df_pp'] is not None:
               mape_dt_reg = st.session_state['mape_dt_reg'] = mean_absolute_percentage_error(target_test, dt_reg_pred)
               st.write('✅ — Decision tree regressor fitted!')
             elif file_name_check == file_name:
+              r2_dt_reg = st.session_state['r2_dt_reg']
+              rmse_dt_reg = st.session_state['rmse_dt_reg']
+              mae_dt_reg = st.session_state['mae_dt_reg']
+              mape_dt_reg = st.session_state['mape_dt_reg']
               st.write('✅ — Decision tree regressor fitted!')
 
             # Ensemble model, light gradient boosting machine regressor
@@ -546,6 +554,10 @@ if st.session_state['df_pp'] is not None:
               mape_lgbm_reg = st.session_state['mape_lgbm_reg'] = mean_absolute_percentage_error(target_test, lgbm_reg_pred)
               st.write('✅ — Light gradient boosting machine regressor fitted!')
             elif file_name_check == file_name:
+              r2_lgbm_reg = st.session_state['r2_lgbm_reg']
+              rmse_lgbm_reg = st.session_state['rmse_lgbm_reg']
+              mae_lgbm_reg = st.session_state['mae_lgbm_reg']
+              mape_lgbm_reg = st.session_state['mape_lgbm_reg']
               st.write('✅ — Light gradient boosting machine regressor fitted!')
 
             # Regression report
