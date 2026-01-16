@@ -625,7 +625,8 @@ if st.session_state['df_pp'] is not None:
                                                                                 width = None,
                                                                                 autosize = True,
                                                                                 title_font_size = 16,
-                                                                                font = dict(size = 11 if len(feature_train.columns) >= 6 else 13)).update_traces(hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
+                                                                                font = dict(size = 11 if len(feature_train.columns) >= 6 else 13),
+                                                                                hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
             st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
             st.write('• Partial Dependence Plots (PDPs):')
