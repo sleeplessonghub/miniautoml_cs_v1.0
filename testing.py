@@ -640,7 +640,7 @@ if st.session_state['df_pp'] is not None:
               st.write('• Partial Dependence Plots (PDPs):')
               pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
               pdp_fig: go.Figure = pdp.plot(show = False, y_title = "") # 'y_title' was a bitch to find (hours!!!), had to dig through the dev's source code
-              st.session_state['pdp_height'] = len(feature_train.columns) * 187.5 if len(feature_train.columns) >= 2 else None
+              st.session_state['pdp_height'] = round(len(feature_train.columns) * 187.5) if len(feature_train.columns) >= 2 else None
               pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False,
                                                                                   height = st.session_state['pdp_height'],
                                                                                   width = None,
@@ -652,7 +652,7 @@ if st.session_state['df_pp'] is not None:
               with st.container(height = st.session_state['pdp_height'], border = True):
                 st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
-              st.session_state['file_name_check'] = st.session_state['file_name'] # New file name update
+              # st.session_state['file_name_check'] = st.session_state['file_name'] # New file name update
 
             elif st.session_state['file_name_check'] == st.session_state['file_name']:
 
