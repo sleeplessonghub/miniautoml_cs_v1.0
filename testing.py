@@ -640,7 +640,7 @@ if st.session_state['df_pp'] is not None:
               st.write('• Partial Dependence Plots (PDPs):')
               pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
               pdp_fig: go.Figure = pdp.plot(show = False, y_title = "") # 'y_title' was a bitch to find (hours!!!), had to dig through the dev's source code
-              st.session_state['pdp_height'] = (len(feature_train.columns) + 1 // 2) * 375 if len(feature_train.columns) >= 2 else None
+              st.session_state['pdp_height'] = (len(feature_train.columns) + 1 // 2) * 300 if len(feature_train.columns) >= 2 else None
               pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False,
                                                                                   height = st.session_state['pdp_height'],
                                                                                   width = None,
