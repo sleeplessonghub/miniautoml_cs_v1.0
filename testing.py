@@ -13,7 +13,7 @@ from statsmodels.tools.tools import add_constant
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
 import lightgbm as lgbm
-from sklearn.metrics import r2_score, root_mean_squared_error, mean_absolute_error, mean_absolute_percentage_error, classification_report
+from sklearn.metrics import r2_score, root_mean_squared_error, mean_absolute_error, mean_absolute_percentage_error, classification_report, f1_score
 import dalex as dx
 import plotly.graph_objects as go
 
@@ -504,6 +504,8 @@ if st.session_state['df_pp'] is not None:
             if resampled == True:
               feature_train_balanced.drop(columns = col_names_num_vif, inplace = True)
             st.write('✅ — VIF multicollinearity diagnostic complete!')
+          
+          # ---------------------------------------------------------------------------------------------------------------------------------------
 
           # Executing machine learning algorithms and evaluation metrics
           st.divider()
@@ -651,7 +653,7 @@ if st.session_state['df_pp'] is not None:
 
               st.write('• Partial Dependence Plots (PDPs):')
               pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
-              pdp_fig: go.Figure = pdp.plot(show = False, y_title = "") # 'y_title' was a bitch to find (took hours!!!), had to dig through the dev's source code
+              pdp_fig: go.Figure = pdp.plot(show = False, y_title = '') # 'y_title' was a bitch to find (took hours!!!), had to dig through the dev's source code
               st.session_state['pdp_height'] = round(len(feature_train.columns) * 175) if len(feature_train.columns) >= 2 else 400
               pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False,
                                                                                   height = st.session_state['pdp_height'],
@@ -687,47 +689,81 @@ if st.session_state['df_pp'] is not None:
           
           elif is_object == True: # Classification modeling
 
+            # Data tracker check initialization
+            if 'data_tracker_check' not in st.session_state:
+              st.session_state['data_tracker_check'] = None
+
             # Linear model, logistic regression
-            logit = LogisticRegression(random_state = 42)
-            logit.fit(feature_train, target_train)
-            logit_pred = logit.predict(feature_test)
-            logit_metrics = classification_report(target_test, logit_pred)
-            st.write('✅ — Logistic regression fitted!')
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
+              logit = LogisticRegression(random_state = 42)
+              logit.fit(feature_train, target_train)
+              logit_pred = logit.predict(feature_test)
+              logit_metrics = st.session_state['logit_metrics'] = classification_report(target_test, logit_pred)
+              logit_f1  = f1_score(target_test, logit_pred, pos_label = 1, average = 'binary')
+              st.write('✅ — Logistic regression fitted!')
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
+              logit_metrics = st.session_state['logit_metrics']
+              st.write('✅ — Logistic regression fitted!')
 
             # Linear model, logistic regression (resampled)
-            logit_rs = LogisticRegression(random_state = 42)
-            logit_rs.fit(feature_train_balanced, target_train_balanced)
-            logit_rs_pred = logit_rs.predict(feature_test)
-            logit_rs_metrics = classification_report(target_test, logit_rs_pred)
-            st.write('✅ — Logistic regression (undersampled) fitted!')
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
+              logit_rs = LogisticRegression(random_state = 42)
+              logit_rs.fit(feature_train_balanced, target_train_balanced)
+              logit_rs_pred = logit_rs.predict(feature_test)
+              logit_rs_metrics = st.session_state['logit_rs_metrics'] = classification_report(target_test, logit_rs_pred)
+              logit_f1_bal = f1_score(target_test, logit_rs_pred, pos_label = 1, average = 'binary')
+              st.write('✅ — Logistic regression (undersampled) fitted!')
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
+              logit_rs_metrics = st.session_state['logit_rs_metrics']
+              st.write('✅ — Logistic regression (undersampled) fitted!')
 
             # Tree-based model, decision tree classifier
-            dt_class = DecisionTreeClassifier(random_state = 42)
-            dt_class.fit(feature_train, target_train)
-            dt_class_pred = dt_class.predict(feature_test)
-            dt_class_metrics = classification_report(target_test, dt_class_pred)
-            st.write('✅ — Decision tree classifier fitted!')
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
+              dt_class = DecisionTreeClassifier(random_state = 42)
+              dt_class.fit(feature_train, target_train)
+              dt_class_pred = dt_class.predict(feature_test)
+              dt_class_metrics = st.session_state['dt_class_metrics'] = classification_report(target_test, dt_class_pred)
+              dt_f1 = f1_score(target_test, dt_class_pred, pos_label = 1, average = 'binary')
+              st.write('✅ — Decision tree classifier fitted!')
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
+              dt_class_metrics = st.session_state['dt_class_metrics']
+              st.write('✅ — Decision tree classifier fitted!')
 
             # Tree-based model, decision tree classifier (resampled)
-            dt_class_rs = DecisionTreeClassifier(random_state = 42)
-            dt_class_rs.fit(feature_train_balanced, target_train_balanced)
-            dt_class_rs_pred = dt_class_rs.predict(feature_test)
-            dt_class_rs_metrics = classification_report(target_test, dt_class_rs_pred)
-            st.write('✅ — Decision tree classifier (undersampled) fitted!')
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
+              dt_class_rs = DecisionTreeClassifier(random_state = 42)
+              dt_class_rs.fit(feature_train_balanced, target_train_balanced)
+              dt_class_rs_pred = dt_class_rs.predict(feature_test)
+              dt_class_rs_metrics = st.session_state['dt_class_rs_metrics'] = classification_report(target_test, dt_class_rs_pred)
+              dt_f1_bal = f1_score(target_test, dt_class_rs_pred, pos_label = 1, average = 'binary')
+              st.write('✅ — Decision tree classifier (undersampled) fitted!')
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
+              dt_class_rs_metrics = st.session_state['dt_class_rs_metrics']
+              st.write('✅ — Decision tree classifier (undersampled) fitted!')
 
             # Ensemble model, light gradient boosting machine classifier
-            lgbm_class = lgbm.LGBMClassifier(random_state = 42, n_jobs = -1)
-            lgbm_class.fit(feature_train, target_train, eval_set = [(feature_test, target_test)], callbacks = [lgbm.early_stopping(stopping_rounds = 3)])
-            lgbm_class_pred = lgbm_class.predict(feature_test)
-            lgbm_class_metrics = classification_report(target_test, lgbm_class_pred)
-            st.write('✅ — Light gradient boosting machine classifier fitted!')
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
+              lgbm_class = lgbm.LGBMClassifier(random_state = 42, n_jobs = -1)
+              lgbm_class.fit(feature_train, target_train, eval_set = [(feature_test, target_test)], callbacks = [lgbm.early_stopping(stopping_rounds = 3)])
+              lgbm_class_pred = lgbm_class.predict(feature_test)
+              lgbm_class_metrics = st.session_state['lgbm_class_metrics'] = classification_report(target_test, lgbm_class_pred)
+              lgbm_f1 = f1_score(target_test, lgbm_class_pred, pos_label = 1, average = 'binary')
+              st.write('✅ — Light gradient boosting machine classifier fitted!')
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
+              lgbm_class_metrics = st.session_state['lgbm_class_metrics']
+              st.write('✅ — Light gradient boosting machine classifier fitted!')
 
             # Ensemble model, light gradient boosting machine classifier (resampled)
-            lgbm_class_rs = lgbm.LGBMClassifier(random_state = 42, n_jobs = -1)
-            lgbm_class_rs.fit(feature_train_balanced, target_train_balanced, eval_set = [(feature_test, target_test)], callbacks = [lgbm.early_stopping(stopping_rounds = 3)])
-            lgbm_class_rs_pred = lgbm_class_rs.predict(feature_test)
-            lgbm_class_rs_metrics = classification_report(target_test, lgbm_class_rs_pred)
-            st.write('✅ — Light gradient boosting machine classifier (undersampled) fitted!')
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
+              lgbm_class_rs = lgbm.LGBMClassifier(random_state = 42, n_jobs = -1)
+              lgbm_class_rs.fit(feature_train_balanced, target_train_balanced, eval_set = [(feature_test, target_test)], callbacks = [lgbm.early_stopping(stopping_rounds = 3)])
+              lgbm_class_rs_pred = lgbm_class_rs.predict(feature_test)
+              lgbm_class_rs_metrics = st.session_state['lgbm_class_rs_metrics'] = classification_report(target_test, lgbm_class_rs_pred)
+              lgbm_f1_bal = f1_score(target_class, lgbm_class_rs_pred, pos_label = 1, average = 'binary')
+              st.write('✅ — Light gradient boosting machine classifier (undersampled) fitted!')
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
+              lgbm_class_rs_metrics = st.session_state['lgbm_class_rs_metrics']
+              st.write('✅ — Light gradient boosting machine classifier (undersampled) fitted!')
 
             # Classification report
             st.write('#### Modeling Report 📋')
@@ -773,6 +809,81 @@ if st.session_state['df_pp'] is not None:
             st.code(lgbm_class_metrics, language = None, width = 513)
             st.write('• LGBM Classifier (Undersampled):')
             st.code(lgbm_class_rs_metrics, language = None, width = 513)
+
+            # Classification best model explainer (dalex)
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
+              
+              model_names = ['XAI: Logistic Regression', 'XAI: Logistic Regression (Undersampled)',
+                             'XAI: DT Classifier', 'XAI: DT Classifier (Undersampled)',
+                             'XAI: LGBM Classifier', 'XAI: LGBM Classifier (Undersampled)']
+              model_fits = [logit, logit_rs, dt_class, dt_class_rs, lgbm_class, lgbm_class_rs]
+              model_f1s = [logit_f1, logit_f1_bal, dt_f1, dt_f1_bal, lgbm_f1, lgbm_f1_bal]
+
+              best_model_f1 = st.session_state['best_model_f1'] = max(model_f1s)
+              best_model_fit = model_fits[model_f1s.index(best_model_f1)]
+              best_model_name = st.session_state['best_model_name'] = model_names[model_fits.index(best_model_fit)]
+
+              best_feature = feature_train_balanced if best_model_name.endswith('(Undersampled)') else feature_train
+              best_target = target_train_balanced if best_model_name.endswith('(Undersampled)') else target_train
+
+              best_model_explainer = dx.Explainer(best_model_fit, best_feature, best_target, label = best_model_name, verbose = False)
+
+              st.text(tw.dedent(
+                  f'''
+                  > Explainable Artificial Intelligence (XAI)
+
+                  • Best Model - {best_model_name[5:]}
+                  • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {best_model_f1 * 100:.2f}%
+                  • Loss Function - Area Under the Curve (AUC)
+                  '''
+              ).strip())
+
+              st.write('• Permutation Feature Importance (PFI):')
+              pfi = best_model_explainer.model_parts(random_state = 42)
+              pfi_fig: go.Figure = pfi.plot(show = False)
+              pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 300 if len(feature_train.columns) >= 6 else 250,
+                                                                                  width = None,
+                                                                                  autosize = True,
+                                                                                  title_font_size = 16,
+                                                                                  font = dict(size = 11 if len(feature_train.columns) >= 6 else 13)).update_traces(hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left'),
+                                                                                                                                                                   hovertemplate = f'⤷ Loss after permutation: <b>%{x*100:.2f}%</b>' + f'<br>⤷ Drop-out loss change: <b>%{text*100:.2f}%</b>' + '<extra></extra>')
+              st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
+
+              st.write('• Partial Dependence Plots (PDPs):')
+              pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
+              pdp_fig: go.Figure = pdp.plot(show = False, y_title = '') # for rant, see regression PDPs
+              st.session_state['pdp_height'] = round(len(feature_train.columns) * 175) if len(feature_train.columns) >= 2 else 400
+              pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False,
+                                                                                  height = st.session_state['pdp_height'],
+                                                                                  width = None,
+                                                                                  autosize = True,
+                                                                                  title_x = 0.5,
+                                                                                  margin = dict(l = 50),
+                                                                                  hovermode = 'closest',
+                                                                                  hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '⤷ Feature Value: <b>%{x:.4f}</b>' + f'<br>⤷ Target Class 1 Proba. Pred.: <b>%{y*100:.2f}%</b>' + '<extra></extra>')
+              with st.container(height = 500 if len(feature_train.columns) >= 3 else 385 if len(feature_train.columns) == 2 else 435, border = True):
+                st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
+              
+              st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
+            
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
+
+              st.text(tw.dedent(
+                  f'''
+                  > Explainable Artificial Intelligence (XAI)
+
+                  • Best Model - {st.session_state['best_model_name'][5:]}
+                  • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {st.session_state['best_model_f1'] * 100:.2f}%
+                  • Loss Function - Area Under the Curve (AUC)
+                  '''
+              ).strip())
+
+              st.write('• Permutation Feature Importance (PFI):')
+              st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
+
+              st.write('• Partial Dependence Plots (PDPs):')
+              with st.container(height = 500 if len(feature_train.columns) >= 3 else 385 if len(feature_train.columns) == 2 else 435, border = True):
+                st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
 
           # E
 
