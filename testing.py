@@ -649,7 +649,7 @@ if st.session_state['df_pp'] is not None:
                                                                                   hovermode = 'closest',
                                                                                   hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '⤷ Feature Value: <b>%{x:.4f}</b>' + '<br>⤷ Target Z-Score Pred.: <b>%{y:.4f}</b>' + '<extra></extra>')
               st.write('• Partial Dependence Plots (PDPs):')
-              with st.container(height = 500 if len(feature_train.columns) >= 2 else 430, border = True):
+              with st.container(height = 500 if len(feature_train.columns) >= 2 else 427, border = True):
                 st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
               st.session_state['file_name_check'] = st.session_state['file_name'] # New file name update
@@ -659,7 +659,7 @@ if st.session_state['df_pp'] is not None:
               st.write('• Permutation Feature Importance (PFI):')
               st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
               st.write('• Partial Dependence Plots (PDPs):')
-              with st.container(height = 500 if len(feature_train.columns) >= 2 else 430, border = True):
+              with st.container(height = 500 if len(feature_train.columns) >= 2 else 427, border = True):
                 st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
           
           elif is_object == True: # Classification modeling
