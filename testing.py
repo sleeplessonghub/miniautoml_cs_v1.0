@@ -598,50 +598,58 @@ if st.session_state['df_pp'] is not None:
             ).strip())
 
             # Regression best model explainer (dalex)
-            model_names = ['XAI: Linear Regression', 'XAI: DT Regressor', 'XAI: LGBM Regressor']
-            model_fits = [ln, dt_reg, lgbm_reg]
-            model_rmses = [rmse_ln, rmse_dt_reg, rmse_lgbm_reg]
+            if file_name_check != file_name:
 
-            best_model_rmse = min(model_rmses)
-            best_model_fit = model_fits[model_rmses.index(best_model_rmse)]
-            best_model_name = model_names[model_fits.index(best_model_fit)]
+              model_names = ['XAI: Linear Regression', 'XAI: DT Regressor', 'XAI: LGBM Regressor']
+              model_fits = [ln, dt_reg, lgbm_reg]
+              model_rmses = [rmse_ln, rmse_dt_reg, rmse_lgbm_reg]
 
-            best_model_explainer = dx.Explainer(best_model_fit, feature_train, target_train, label = best_model_name, verbose = False)
+              best_model_rmse = min(model_rmses)
+              best_model_fit = model_fits[model_rmses.index(best_model_rmse)]
+              best_model_name = model_names[model_fits.index(best_model_fit)]
 
-            st.text(tw.dedent(
-                f'''
-                > Explainable Artificial Intelligence (XAI)
+              best_model_explainer = dx.Explainer(best_model_fit, feature_train, target_train, label = best_model_name, verbose = False)
 
-                • Best Model - {best_model_name[5:]}
-                • Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {best_model_rmse:.4f}
-                • Loss Function - Root Mean Squared Error (RMSE)
-                '''
-            ).strip())
+              st.text(tw.dedent(
+                  f'''
+                  > Explainable Artificial Intelligence (XAI)
 
-            st.write('• Permutation Feature Importance (PFI):')
-            pfi = best_model_explainer.model_parts(random_state = 42)
-            pfi_fig: go.Figure = pfi.plot(show = False)
-            pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 300 if len(feature_train.columns) >= 6 else 250,
-                                                                                width = None,
-                                                                                autosize = True,
-                                                                                title_font_size = 16,
-                                                                                font = dict(size = 11 if len(feature_train.columns) >= 6 else 13)).update_traces(hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left'), hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
-            st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
+                  • Best Model - {best_model_name[5:]}
+                  • Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {best_model_rmse:.4f}
+                  • Loss Function - Root Mean Squared Error (RMSE)
+                  '''
+              ).strip())
 
-            st.write('• Partial Dependence Plots (PDPs):')
-            pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
-            pdp_fig: go.Figure = pdp.plot(show = False, y_title = "") # 'y_title' was a bitch to find (hours!!!), had to dig through the dev's source code
-            pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False,
-                                                                                height = 600 if len(feature_train.columns) >= 3 else 375 if len(feature_train.columns) == 2 else None,
-                                                                                width = None,
-                                                                                autosize = True,
-                                                                                title_x = 0.5,
-                                                                                margin = dict(l = 50),
-                                                                                hovermode = 'closest',
-                                                                                hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '⤷ Feature Value: <b>%{x:.4f}</b>' + '<br>⤷ Target Z-Score Pred.: <b>%{y:.4f}</b>' + '<extra></extra>')
-            st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
+              st.write('• Permutation Feature Importance (PFI):')
+              pfi = best_model_explainer.model_parts(random_state = 42)
+              pfi_fig: go.Figure = pfi.plot(show = False)
+              pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 300 if len(feature_train.columns) >= 6 else 250,
+                                                                                  width = None,
+                                                                                  autosize = True,
+                                                                                  title_font_size = 16,
+                                                                                  font = dict(size = 11 if len(feature_train.columns) >= 6 else 13)).update_traces(hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left'),
+                                                                                                                                                                   hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
+              st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
-            # To-do: edit PFI plot tooltip for better user experience on bar hover, continue new data check logic (session_state storing of 'pfi_fig_ss' and 'pdp_fig_ss' thus far) for faster ML load
+              st.write('• Partial Dependence Plots (PDPs):')
+              pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
+              pdp_fig: go.Figure = pdp.plot(show = False, y_title = "") # 'y_title' was a bitch to find (hours!!!), had to dig through the dev's source code
+              pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False,
+                                                                                  height = 625 if len(feature_train.columns) >= 3 else 375 if len(feature_train.columns) == 2 else None,
+                                                                                  width = None,
+                                                                                  autosize = True,
+                                                                                  title_x = 0.5,
+                                                                                  margin = dict(l = 50),
+                                                                                  hovermode = 'closest',
+                                                                                  hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '⤷ Feature Value: <b>%{x:.4f}</b>' + '<br>⤷ Target Z-Score Pred.: <b>%{y:.4f}</b>' + '<extra></extra>')
+              st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
+
+              file_name_check = file_name
+
+            elif file_name_check == file_name:
+
+              st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
+              st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
           
           elif is_object == True: # Classification modeling
 
