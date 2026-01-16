@@ -20,7 +20,7 @@ import plotly.graph_objects as go
 # Title call
 st.title('Mini AutoML (Cross-Sectional) v1.0')
 
-# Session state layer initializations
+# Layer guard initializations
 if 'df_pp' not in st.session_state:
   st.session_state['df_pp'] = None # Layer 1 check
 if 'submitted_ref' not in st.session_state:
@@ -34,10 +34,10 @@ if uploaded_file:
   try:
     if uploaded_file.name.endswith('.csv'):
       st.session_state['df_pp'] = pd.read_csv(uploaded_file)
-      file_name = st.session_state['file_name'] = uploaded_file.name # To be used for new data check for ML (.csv)
+      st.session_state['file_name'] = uploaded_file.name # To be used for new data check for ML (.csv)
     elif uploaded_file.name.endswith('.xlsx'):
       st.session_state['df_pp'] = pd.read_excel(uploaded_file)
-      file_name = st.session_state['file_name'] = uploaded_file.name # To be used for new data check for ML (.xlsx)
+      st.session_state['file_name'] = uploaded_file.name # To be used for new data check for ML (.xlsx)
   except:
     st.error("Uploaded file format must be in either '.csv' or '.xlsx'!", icon = '🛑')
     st.stop()
@@ -105,20 +105,18 @@ if st.session_state['df_pp'] is not None:
     submitted = st.form_submit_button('Confirm type specification')
 
   if submitted == True:
-    submitted_ref = st.session_state['submitted_ref'] = True
-  else:
-    submitted_ref = st.session_state['submitted_ref']
+    st.session_state['submitted_ref'] = True
 
-  if submitted_ref == True:
+  if st.session_state['submitted_ref'] == True:
     if unassigned_count > 0:
       st.error('Detected at least 1 column without data type specification!', icon = '🛑')
-      submitted_ref = False
+      st.session_state['submitted_ref'] = False
     elif id_count >= 2:
       st.error("'Identification' label has been assigned to 2 or more columns!", icon = '🛑')
-      submitted_ref = False
+      st.session_state['submitted_ref'] = False
     elif valid_assigned_count < 2:
       st.error('At least 2 columns must be labeled as non-ID and non-drop!', icon = '🛑')
-      submitted_ref = False
+      st.session_state['submitted_ref'] = False
     else:
       st.write('✅ — Dataset variable type specification complete!') # Guarded execution block (layer 2)
 
@@ -367,11 +365,9 @@ if st.session_state['df_pp'] is not None:
         submitted_2 = st.form_submit_button('Confirm target variable/class assignment')
       
       if submitted_2 == True:
-        submitted_2_ref = st.session_state['submitted_2_ref'] = True
-      else:
-        submitted_2_ref = st.session_state['submitted_2_ref']
+        st.session_state['submitted_2_ref'] = True
       
-      if submitted_2_ref == True:
+      if st.session_state['submitted_2_ref'] == True:
         if unassigned_count_2 > 0:
           st.error('Detected target variable/class without dropdown selection!', icon = '🛑')
         else:
@@ -503,14 +499,12 @@ if st.session_state['df_pp'] is not None:
 
           if is_object == False: # Regression modeling
 
-            # New data check
+            # New data check flag initialization
             if 'file_name_check' not in st.session_state:
-              file_name_check = st.session_state['file_name_check'] = None
-            else:
-              file_name_check = st.session_state['file_name_check']
+              st.session_state['file_name_check'] = None
 
             # Linear model, linear regression
-            if file_name_check != file_name:
+            if st.session_state['file_name_check'] != st.session_state['file_name']:
               ln = LinearRegression()
               ln.fit(feature_train, target_train)
               ln_pred = ln.predict(feature_test)
@@ -519,7 +513,7 @@ if st.session_state['df_pp'] is not None:
               mae_ln = st.session_state['mae_ln'] = mean_absolute_error(target_test, ln_pred)
               mape_ln = st.session_state['mape_ln'] = mean_absolute_percentage_error(target_test, ln_pred)
               st.write('✅ — Linear regression fitted!')
-            elif file_name_check == file_name:
+            elif st.session_state['file_name_check'] == st.session_state['file_name']:
               r2_ln = st.session_state['r2_ln']
               rmse_ln = st.session_state['rmse_ln']
               mae_ln = st.session_state['mae_ln']
@@ -527,7 +521,7 @@ if st.session_state['df_pp'] is not None:
               st.write('✅ — Linear regression fitted!')
 
             # Tree-based model, decision tree regressor
-            if file_name_check != file_name:
+            if st.session_state['file_name_check'] != st.session_state['file_name']:
               dt_reg = DecisionTreeRegressor(random_state = 42)
               dt_reg.fit(feature_train, target_train)
               dt_reg_pred = dt_reg.predict(feature_test)
@@ -536,7 +530,7 @@ if st.session_state['df_pp'] is not None:
               mae_dt_reg = st.session_state['mae_dt_reg'] = mean_absolute_error(target_test, dt_reg_pred)
               mape_dt_reg = st.session_state['mape_dt_reg'] = mean_absolute_percentage_error(target_test, dt_reg_pred)
               st.write('✅ — Decision tree regressor fitted!')
-            elif file_name_check == file_name:
+            elif st.session_state['file_name_check'] == st.session_state['file_name']:
               r2_dt_reg = st.session_state['r2_dt_reg']
               rmse_dt_reg = st.session_state['rmse_dt_reg']
               mae_dt_reg = st.session_state['mae_dt_reg']
@@ -544,7 +538,7 @@ if st.session_state['df_pp'] is not None:
               st.write('✅ — Decision tree regressor fitted!')
 
             # Ensemble model, light gradient boosting machine regressor
-            if file_name_check != file_name:
+            if st.session_state['file_name_check'] != st.session_state['file_name']:
               lgbm_reg = lgbm.LGBMRegressor(random_state = 42, n_jobs = -1)
               lgbm_reg.fit(feature_train, target_train, eval_set = [(feature_test, target_test)], callbacks = [lgbm.early_stopping(stopping_rounds = 3)])
               lgbm_reg_pred = lgbm_reg.predict(feature_test)
@@ -553,7 +547,7 @@ if st.session_state['df_pp'] is not None:
               mae_lgbm_reg = st.session_state['mae_lgbm_reg'] = mean_absolute_error(target_test, lgbm_reg_pred)
               mape_lgbm_reg = st.session_state['mape_lgbm_reg'] = mean_absolute_percentage_error(target_test, lgbm_reg_pred)
               st.write('✅ — Light gradient boosting machine regressor fitted!')
-            elif file_name_check == file_name:
+            elif st.session_state['file_name_check'] == st.session_state['file_name']:
               r2_lgbm_reg = st.session_state['r2_lgbm_reg']
               rmse_lgbm_reg = st.session_state['rmse_lgbm_reg']
               mae_lgbm_reg = st.session_state['mae_lgbm_reg']
@@ -610,7 +604,7 @@ if st.session_state['df_pp'] is not None:
             ).strip())
 
             # Regression best model explainer (dalex)
-            if file_name_check != file_name:
+            if st.session_state['file_name_check'] != st.session_state['file_name']:
 
               model_names = ['XAI: Linear Regression', 'XAI: DT Regressor', 'XAI: LGBM Regressor']
               model_fits = [ln, dt_reg, lgbm_reg]
@@ -656,12 +650,12 @@ if st.session_state['df_pp'] is not None:
                                                                                   hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '⤷ Feature Value: <b>%{x:.4f}</b>' + '<br>⤷ Target Z-Score Pred.: <b>%{y:.4f}</b>' + '<extra></extra>')
               st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
-              file_name_check = st.session_state['file_name_check'] = file_name
+              st.session_state['file_name_check'] = st.session_state['file_name'] # New file name update
 
-            elif file_name_check == file_name:
+            elif st.session_state['file_name_check'] == st.session_state['file_name']:
 
-              st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
-              st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
+              st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
+              st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
           
           elif is_object == True: # Classification modeling
 
