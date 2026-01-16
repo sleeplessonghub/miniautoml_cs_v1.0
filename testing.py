@@ -644,7 +644,7 @@ if st.session_state['df_pp'] is not None:
                                                                                   hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '⤷ Feature Value: <b>%{x:.4f}</b>' + '<br>⤷ Target Z-Score Pred.: <b>%{y:.4f}</b>' + '<extra></extra>')
               st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
-              file_name_check = file_name
+              file_name_check = st.session_state['file_name_check'] = file_name
 
             elif file_name_check == file_name:
 
