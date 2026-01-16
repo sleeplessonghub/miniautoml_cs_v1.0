@@ -28,16 +28,20 @@ if 'submitted_ref' not in st.session_state:
 if 'submitted_2_ref' not in st.session_state:
   st.session_state['submitted_2_ref'] = False # Layer 3 check
 
+st.session_state['data_tracker'] = None # To be used for new data check for ML (initialization/reset)
+
 # Dataset upload and conversion to a pandas dataframe
 uploaded_file = st.file_uploader("Upload a '.csv' or '.xlsx' file", type = ['csv', 'xlsx'], accept_multiple_files = False)
 if uploaded_file:
   try:
     if uploaded_file.name.endswith('.csv'):
       st.session_state['df_pp'] = pd.read_csv(uploaded_file)
-      st.session_state['file_name'] = uploaded_file.name # To be used for new data check for ML (.csv)
+      st.session_state['data_tracker'] = uploaded_file.name # To be used for new data check for ML (file name #1)
+      st.session_state['data_tracker'] = st.session_state['data_tracker'] + str(uploaded_file.size) # To be used for new data check for ML (file size #1)
     elif uploaded_file.name.endswith('.xlsx'):
       st.session_state['df_pp'] = pd.read_excel(uploaded_file)
-      st.session_state['file_name'] = uploaded_file.name # To be used for new data check for ML (.xlsx)
+      st.session_state['data_tracker'] = uploaded_file.name # To be used for new data check for ML (file name #2)
+      st.session_state['data_tracker'] = st.session_state['data_tracker'] + str(uploaded_file.size) # To be used for new data check for ML (file size #2)
   except:
     st.error("Uploaded file format must be in either '.csv' or '.xlsx'!", icon = '🛑')
     st.stop()
@@ -103,6 +107,8 @@ if st.session_state['df_pp'] is not None:
         valid_assigned_count = valid_assigned_count + 1
       col_types.append(data_type)
     submitted = st.form_submit_button('Confirm type specification')
+  
+  st.session_state['data_tracker'] = st.session_state['data_tracker'] + ''.join(col_types) # To be used for new data check for ML (column types)
 
   if submitted == True:
     st.session_state['submitted_ref'] = True
@@ -364,6 +370,12 @@ if st.session_state['df_pp'] is not None:
             is_object = True
         submitted_2 = st.form_submit_button('Confirm target variable/class assignment')
       
+      st.session_state['data_tracker'] = st.session_state['data_tracker'] + target # To be used for new data check for ML (target column)
+      if is_object == False or target_class == None:
+        pass
+      elif is_object == True and target_class != None:
+        st.session_state['data_tracker'] = st.session_state['data_tracker'] + target_class # To be used for new data check for ML (class 1 label)
+
       if submitted_2 == True:
         st.session_state['submitted_2_ref'] = True
       
@@ -499,12 +511,12 @@ if st.session_state['df_pp'] is not None:
 
           if is_object == False: # Regression modeling
 
-            # New data check flag initialization
-            if 'file_name_check' not in st.session_state:
-              st.session_state['file_name_check'] = None
+            # Data tracker check initialization
+            if 'data_tracker_check' not in st.session_state:
+              st.session_state['data_tracker_check'] = None
 
             # Linear model, linear regression
-            if st.session_state['file_name_check'] != st.session_state['file_name']:
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
               ln = LinearRegression()
               ln.fit(feature_train, target_train)
               ln_pred = ln.predict(feature_test)
@@ -513,7 +525,7 @@ if st.session_state['df_pp'] is not None:
               mae_ln = st.session_state['mae_ln'] = mean_absolute_error(target_test, ln_pred)
               mape_ln = st.session_state['mape_ln'] = mean_absolute_percentage_error(target_test, ln_pred)
               st.write('✅ — Linear regression fitted!')
-            elif st.session_state['file_name_check'] == st.session_state['file_name']:
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
               r2_ln = st.session_state['r2_ln']
               rmse_ln = st.session_state['rmse_ln']
               mae_ln = st.session_state['mae_ln']
@@ -521,7 +533,7 @@ if st.session_state['df_pp'] is not None:
               st.write('✅ — Linear regression fitted!')
 
             # Tree-based model, decision tree regressor
-            if st.session_state['file_name_check'] != st.session_state['file_name']:
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
               dt_reg = DecisionTreeRegressor(random_state = 42)
               dt_reg.fit(feature_train, target_train)
               dt_reg_pred = dt_reg.predict(feature_test)
@@ -530,7 +542,7 @@ if st.session_state['df_pp'] is not None:
               mae_dt_reg = st.session_state['mae_dt_reg'] = mean_absolute_error(target_test, dt_reg_pred)
               mape_dt_reg = st.session_state['mape_dt_reg'] = mean_absolute_percentage_error(target_test, dt_reg_pred)
               st.write('✅ — Decision tree regressor fitted!')
-            elif st.session_state['file_name_check'] == st.session_state['file_name']:
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
               r2_dt_reg = st.session_state['r2_dt_reg']
               rmse_dt_reg = st.session_state['rmse_dt_reg']
               mae_dt_reg = st.session_state['mae_dt_reg']
@@ -538,7 +550,7 @@ if st.session_state['df_pp'] is not None:
               st.write('✅ — Decision tree regressor fitted!')
 
             # Ensemble model, light gradient boosting machine regressor
-            if st.session_state['file_name_check'] != st.session_state['file_name']:
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
               lgbm_reg = lgbm.LGBMRegressor(random_state = 42, n_jobs = -1)
               lgbm_reg.fit(feature_train, target_train, eval_set = [(feature_test, target_test)], callbacks = [lgbm.early_stopping(stopping_rounds = 3)])
               lgbm_reg_pred = lgbm_reg.predict(feature_test)
@@ -547,7 +559,7 @@ if st.session_state['df_pp'] is not None:
               mae_lgbm_reg = st.session_state['mae_lgbm_reg'] = mean_absolute_error(target_test, lgbm_reg_pred)
               mape_lgbm_reg = st.session_state['mape_lgbm_reg'] = mean_absolute_percentage_error(target_test, lgbm_reg_pred)
               st.write('✅ — Light gradient boosting machine regressor fitted!')
-            elif st.session_state['file_name_check'] == st.session_state['file_name']:
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
               r2_lgbm_reg = st.session_state['r2_lgbm_reg']
               rmse_lgbm_reg = st.session_state['rmse_lgbm_reg']
               mae_lgbm_reg = st.session_state['mae_lgbm_reg']
@@ -555,7 +567,7 @@ if st.session_state['df_pp'] is not None:
               st.write('✅ — Light gradient boosting machine regressor fitted!')
 
             # Regression report
-            st.write('#### Output Statistics')
+            st.write('#### Modeling Report 📑')
             
             st.text(tw.dedent(
                 f'''
@@ -604,15 +616,15 @@ if st.session_state['df_pp'] is not None:
             ).strip())
 
             # Regression best model explainer (dalex)
-            if st.session_state['file_name_check'] != st.session_state['file_name']:
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
 
               model_names = ['XAI: Linear Regression', 'XAI: DT Regressor', 'XAI: LGBM Regressor']
               model_fits = [ln, dt_reg, lgbm_reg]
               model_rmses = [rmse_ln, rmse_dt_reg, rmse_lgbm_reg]
 
-              best_model_rmse = min(model_rmses)
+              best_model_rmse = st.session_state['best_model_rmse'] = min(model_rmses)
               best_model_fit = model_fits[model_rmses.index(best_model_rmse)]
-              best_model_name = model_names[model_fits.index(best_model_fit)]
+              best_model_name = st.session_state['best_model_name'] = model_names[model_fits.index(best_model_fit)]
 
               best_model_explainer = dx.Explainer(best_model_fit, feature_train, target_train, label = best_model_name, verbose = False)
 
@@ -637,8 +649,9 @@ if st.session_state['df_pp'] is not None:
                                                                                                                                                                    hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
               st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
+              st.write('• Partial Dependence Plots (PDPs):')
               pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
-              pdp_fig: go.Figure = pdp.plot(show = False, y_title = "") # 'y_title' was a bitch to find (hours!!!), had to dig through the dev's source code
+              pdp_fig: go.Figure = pdp.plot(show = False, y_title = "") # 'y_title' was a bitch to find (took hours!!!), had to dig through the dev's source code
               st.session_state['pdp_height'] = round(len(feature_train.columns) * 150) if len(feature_train.columns) >= 2 else 400
               pdp_fig_ss = st.session_state['pdp_fig_ss'] = pdp_fig.update_layout(showlegend = False,
                                                                                   height = st.session_state['pdp_height'],
@@ -648,16 +661,26 @@ if st.session_state['df_pp'] is not None:
                                                                                   margin = dict(l = 50),
                                                                                   hovermode = 'closest',
                                                                                   hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '⤷ Feature Value: <b>%{x:.4f}</b>' + '<br>⤷ Target Z-Score Pred.: <b>%{y:.4f}</b>' + '<extra></extra>')
-              st.write('• Partial Dependence Plots (PDPs):')
               with st.container(height = 500 if len(feature_train.columns) >= 2 else 435, border = True):
                 st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
-              st.session_state['file_name_check'] = st.session_state['file_name'] # New file name update
+              st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
 
-            elif st.session_state['file_name_check'] == st.session_state['file_name']:
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
+
+              st.write(tw.dedent(
+                  f'''
+                  > Explainable Artificial Intelligence (XAI)
+
+                  • Best Model - {st.session_state['best_model_name'][5:]}
+                  • Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {st.session_state['best_model_rmse']:.4f}
+                  • Loss Function - Root Mean Squared Error (RMSE)
+                  '''
+              ).strip())
 
               st.write('• Permutation Feature Importance (PFI):')
               st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
+              
               st.write('• Partial Dependence Plots (PDPs):')
               with st.container(height = 500 if len(feature_train.columns) >= 2 else 435, border = True):
                 st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
@@ -707,7 +730,7 @@ if st.session_state['df_pp'] is not None:
             st.write('✅ — Light gradient boosting machine classifier (undersampled) fitted!')
 
             # Classification report
-            st.write('#### Output Statistics')
+            st.write('#### Modeling Report 📑')
             
             st.text(tw.dedent(
                 f'''
@@ -737,7 +760,7 @@ if st.session_state['df_pp'] is not None:
                 '''
             ).strip())
 
-            st.write('---- Classification Reports (Test Set Predictions)')
+            st.write('---- Model Fit Evaluation Metrics (Test Set Predictions)')
             st.write('• Logistic Regression:')
             st.code(logit_metrics, language = None, width = 513)
             st.write('• Logistic Regression (Undersampled):')
