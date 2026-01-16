@@ -567,7 +567,7 @@ if st.session_state['df_pp'] is not None:
               st.write('✅ — Light gradient boosting machine regressor fitted!')
 
             # Regression report
-            st.write('#### Modeling Report 📑')
+            st.write('#### Modeling Report 📋')
             
             st.text(tw.dedent(
                 f'''
@@ -730,7 +730,7 @@ if st.session_state['df_pp'] is not None:
             st.write('✅ — Light gradient boosting machine classifier (undersampled) fitted!')
 
             # Classification report
-            st.write('#### Modeling Report 📑')
+            st.write('#### Modeling Report 📋')
             
             st.text(tw.dedent(
                 f'''
