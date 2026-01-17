@@ -834,7 +834,7 @@ if st.session_state['df_pp'] is not None:
 
                   • Best Model - {best_model_name[5:]}
                   • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {best_model_f1 * 100:.2f}%
-                  • Loss Function - Area Under the Curve (AUC)
+                  • Loss Function - Area Above the Curve (1-AUC)
                   '''
               ).strip())
 
@@ -874,7 +874,7 @@ if st.session_state['df_pp'] is not None:
 
                   • Best Model - {st.session_state['best_model_name'][5:]}
                   • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {st.session_state['best_model_f1'] * 100:.2f}%
-                  • Loss Function - Area Under the Curve (AUC)
+                  • Loss Function - Area Above the Curve (1-AUC)
                   '''
               ).strip())
 
