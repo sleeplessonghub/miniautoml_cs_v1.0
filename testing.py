@@ -505,6 +505,8 @@ if st.session_state['df_pp'] is not None:
               feature_train_balanced.drop(columns = col_names_num_vif, inplace = True)
             st.write('✅ — VIF multicollinearity diagnostic complete!')
           
+          st.session_state['data_tracker'] = st.session_state['data_tracker'] + feature_train.columns # To be used for new data check for ML (column name change)
+          
           # ---------------------------------------------------------------------------------------------------------------------------------------
 
           # Executing machine learning algorithms and evaluation metrics
@@ -621,29 +623,29 @@ if st.session_state['df_pp'] is not None:
             ).strip())
 
             # Regression best model explainer (dalex)
-            with st.spinner('Running explainable artificial intelligence...', show_time = True):
-              if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
 
-                model_names = ['XAI: Linear Regression', 'XAI: DT Regressor', 'XAI: LGBM Regressor']
-                model_fits = [ln, dt_reg, lgbm_reg]
-                model_rmses = [rmse_ln, rmse_dt_reg, rmse_lgbm_reg]
+              model_names = ['XAI: Linear Regression', 'XAI: DT Regressor', 'XAI: LGBM Regressor']
+              model_fits = [ln, dt_reg, lgbm_reg]
+              model_rmses = [rmse_ln, rmse_dt_reg, rmse_lgbm_reg]
 
-                best_model_rmse = st.session_state['best_model_rmse'] = min(model_rmses)
-                best_model_fit = model_fits[model_rmses.index(best_model_rmse)]
-                best_model_name = st.session_state['best_model_name'] = model_names[model_fits.index(best_model_fit)]
+              best_model_rmse = st.session_state['best_model_rmse'] = min(model_rmses)
+              best_model_fit = model_fits[model_rmses.index(best_model_rmse)]
+              best_model_name = st.session_state['best_model_name'] = model_names[model_fits.index(best_model_fit)]
 
-                best_model_explainer = dx.Explainer(best_model_fit, feature_train, target_train, label = best_model_name, verbose = False)
+              best_model_explainer = dx.Explainer(best_model_fit, feature_train, target_train, label = best_model_name, verbose = False)
 
-                st.text(tw.dedent(
-                    f'''
-                    > Explainable Artificial Intelligence (XAI)
+              st.text(tw.dedent(
+                  f'''
+                  > Explainable Artificial Intelligence (XAI)
 
-                    • Best Model - {best_model_name[5:]}
-                    • Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {best_model_rmse:.4f}
-                    • Loss Function - Root Mean Squared Error (RMSE)
-                    '''
-                ).strip())
+                  • Best Model - {best_model_name[5:]}
+                  • Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {best_model_rmse:.4f}
+                  • Loss Function - Root Mean Squared Error (RMSE)
+                  '''
+              ).strip())
 
+              with st.spinner('Plotting permutation feature importance...', show_time = True):
                 st.write('• Permutation Feature Importance (PFI):')
                 pfi = best_model_explainer.model_parts(random_state = 42)
                 pfi_fig: go.Figure = pfi.plot(show = False)
@@ -655,6 +657,7 @@ if st.session_state['df_pp'] is not None:
                                                                                                                                                                     hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
                 st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
+              with st.spinner('Plotting partial dependence plots...', show_time = True):
                 st.write('• Partial Dependence Plots (PDPs):')
                 pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
                 pdp_fig: go.Figure = pdp.plot(show = False, y_title = '') # 'y_title' was a bitch to find (took hours!!!), had to dig through the dev's source code
@@ -670,23 +673,25 @@ if st.session_state['df_pp'] is not None:
                 with st.container(height = 500 if len(feature_train.columns) >= 3 else 385 if len(feature_train.columns) == 2 else 435, border = True):
                   st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
-                st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
+              st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
 
-              elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
 
-                st.text(tw.dedent(
-                    f'''
-                    > Explainable Artificial Intelligence (XAI)
+              st.text(tw.dedent(
+                  f'''
+                  > Explainable Artificial Intelligence (XAI)
 
-                    • Best Model - {st.session_state['best_model_name'][5:]}
-                    • Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {st.session_state['best_model_rmse']:.4f}
-                    • Loss Function - Root Mean Squared Error (RMSE)
-                    '''
-                ).strip())
+                  • Best Model - {st.session_state['best_model_name'][5:]}
+                  • Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {st.session_state['best_model_rmse']:.4f}
+                  • Loss Function - Root Mean Squared Error (RMSE)
+                  '''
+              ).strip())
 
+              with st.spinner('Plotting permutation feature importance...', show_time = True):
                 st.write('• Permutation Feature Importance (PFI):')
                 st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
-                
+              
+              with st.spinner('Plotting partial dependence plots...', show_time = True):
                 st.write('• Partial Dependence Plots (PDPs):')
                 with st.container(height = 500 if len(feature_train.columns) >= 3 else 385 if len(feature_train.columns) == 2 else 435, border = True):
                   st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
@@ -821,34 +826,34 @@ if st.session_state['df_pp'] is not None:
             st.code(lgbm_class_rs_metrics, language = None, width = 513)
 
             # Classification best model explainer (dalex)
-            with st.spinner('Running explainable artificial intelligence...', show_time = True):
-              if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
-                
-                model_names = ['XAI: Logistic Regression', 'XAI: Logistic Regression (Undersampled)',
-                              'XAI: DT Classifier', 'XAI: DT Classifier (Undersampled)',
-                              'XAI: LGBM Classifier', 'XAI: LGBM Classifier (Undersampled)']
-                model_fits = [logit, logit_rs, dt_class, dt_class_rs, lgbm_class, lgbm_class_rs]
-                model_f1s = [logit_f1, logit_f1_bal, dt_f1, dt_f1_bal, lgbm_f1, lgbm_f1_bal]
+            if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
+              
+              model_names = ['XAI: Logistic Regression', 'XAI: Logistic Regression (Undersampled)',
+                            'XAI: DT Classifier', 'XAI: DT Classifier (Undersampled)',
+                            'XAI: LGBM Classifier', 'XAI: LGBM Classifier (Undersampled)']
+              model_fits = [logit, logit_rs, dt_class, dt_class_rs, lgbm_class, lgbm_class_rs]
+              model_f1s = [logit_f1, logit_f1_bal, dt_f1, dt_f1_bal, lgbm_f1, lgbm_f1_bal]
 
-                best_model_f1 = st.session_state['best_model_f1'] = max(model_f1s)
-                best_model_fit = model_fits[model_f1s.index(best_model_f1)]
-                best_model_name = st.session_state['best_model_name'] = model_names[model_fits.index(best_model_fit)]
+              best_model_f1 = st.session_state['best_model_f1'] = max(model_f1s)
+              best_model_fit = model_fits[model_f1s.index(best_model_f1)]
+              best_model_name = st.session_state['best_model_name'] = model_names[model_fits.index(best_model_fit)]
 
-                best_feature = feature_train_balanced if best_model_name.endswith('(Undersampled)') else feature_train
-                best_target = target_train_balanced if best_model_name.endswith('(Undersampled)') else target_train
+              best_feature = feature_train_balanced if best_model_name.endswith('(Undersampled)') else feature_train
+              best_target = target_train_balanced if best_model_name.endswith('(Undersampled)') else target_train
 
-                best_model_explainer = dx.Explainer(best_model_fit, best_feature, best_target, label = best_model_name, verbose = False)
+              best_model_explainer = dx.Explainer(best_model_fit, best_feature, best_target, label = best_model_name, verbose = False)
 
-                st.text(tw.dedent(
-                    f'''
-                    > Explainable Artificial Intelligence (XAI)
+              st.text(tw.dedent(
+                  f'''
+                  > Explainable Artificial Intelligence (XAI)
 
-                    • Best Model - {best_model_name[5:]}
-                    • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {best_model_f1 * 100:.2f}%
-                    • Loss Function - Area Above the Curve (1-AUC)
-                    '''
-                ).strip())
+                  • Best Model - {best_model_name[5:]}
+                  • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {best_model_f1 * 100:.2f}%
+                  • Loss Function - Area Above the Curve (1-AUC)
+                  '''
+              ).strip())
 
+              with st.spinner('Plotting permutation feature importance...', show_time = True):
                 st.write('• Permutation Feature Importance (PFI):')
                 pfi = best_model_explainer.model_parts(random_state = 42)
                 pfi_fig: go.Figure = pfi.plot(show = False)
@@ -860,6 +865,7 @@ if st.session_state['df_pp'] is not None:
                                                                                                                                                                     hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
                 st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
+              with st.spinner('Plotting partial dependence plots...', show_time = True):
                 st.write('• Partial Dependence Plots (PDPs):')
                 pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
                 pdp_fig: go.Figure = pdp.plot(show = False, y_title = '') # for rant, see regression PDPs
@@ -874,24 +880,26 @@ if st.session_state['df_pp'] is not None:
                                                                                     hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left')).update_traces(hovertemplate = '⤷ Feature Value: <b>%{x:.4f}</b>' + '<br>⤷ Target Class 1 Proba. Pred.: <b>%{y:.4f}</b>' + '<extra></extra>')
                 with st.container(height = 500 if len(feature_train.columns) >= 3 else 385 if len(feature_train.columns) == 2 else 435, border = True):
                   st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
-                
-                st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
               
-              elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
+              st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
+            
+            elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
 
-                st.text(tw.dedent(
-                    f'''
-                    > Explainable Artificial Intelligence (XAI)
+              st.text(tw.dedent(
+                  f'''
+                  > Explainable Artificial Intelligence (XAI)
 
-                    • Best Model - {st.session_state['best_model_name'][5:]}
-                    • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {st.session_state['best_model_f1'] * 100:.2f}%
-                    • Loss Function - Area Above the Curve (1-AUC)
-                    '''
-                ).strip())
+                  • Best Model - {st.session_state['best_model_name'][5:]}
+                  • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {st.session_state['best_model_f1'] * 100:.2f}%
+                  • Loss Function - Area Above the Curve (1-AUC)
+                  '''
+              ).strip())
 
+              with st.spinner('Plotting permutation feature importance...', show_time = True):
                 st.write('• Permutation Feature Importance (PFI):')
                 st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
 
+              with st.spinner('Plotting partial dependence plots...', show_time = True):
                 st.write('• Partial Dependence Plots (PDPs):')
                 with st.container(height = 500 if len(feature_train.columns) >= 3 else 385 if len(feature_train.columns) == 2 else 435, border = True):
                   st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
@@ -900,4 +908,5 @@ if st.session_state['df_pp'] is not None:
 
 else:
   st.subheader('No file upload detected')
+  st.stop()
   
