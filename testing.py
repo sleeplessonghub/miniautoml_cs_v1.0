@@ -505,7 +505,7 @@ if st.session_state['df_pp'] is not None:
               feature_train_balanced.drop(columns = col_names_num_vif, inplace = True)
             st.write('✅ — VIF multicollinearity diagnostic complete!')
           
-          st.session_state['data_tracker'] = st.session_state['data_tracker'] + feature_train.columns # To be used for new data check for ML (column name change)
+          st.session_state['data_tracker'] = st.session_state['data_tracker'] + str(feature_train.columns.tolist()) # To be used for new data check for ML (column name change)
           
           # ---------------------------------------------------------------------------------------------------------------------------------------
 
