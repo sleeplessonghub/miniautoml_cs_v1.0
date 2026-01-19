@@ -124,7 +124,8 @@ if st.session_state['df_pp'] is not None:
     else:
       st.write('✅ — Dataset variable type specification complete!') # Guarded execution block (layer 2)
 
-      st.session_state['data_tracker'] = st.session_state['data_tracker'] + ''.join(col_types) # To be used for new data check for ML (column types)
+      if col_types:
+        st.session_state['data_tracker'] = st.session_state['data_tracker'] + ''.join(col_types) # To be used for new data check for ML (column types)
 
       # Random sampling in the case of large population
       if len(df_pp) > 20000:
