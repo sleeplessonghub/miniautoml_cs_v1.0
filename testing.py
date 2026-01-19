@@ -508,8 +508,8 @@ if st.session_state['df_pp'] is not None:
           
           # Column name string processing error and overlap fix (modeling bug fix)
           for col in feature_train.columns:
-            if col.startswith('col_') == False:
-              col_fix = 'col_' + str(col)
+            if col.startswith('_') == False:
+              col_fix = '_' + str(col)
             else:
               col_fix = str(col)
             col_fix = re.sub(r'[^a-zA-Z0-9]', '_', str(col_fix))
@@ -520,8 +520,8 @@ if st.session_state['df_pp'] is not None:
             if resampled == True:
               feature_train_balanced.rename(columns = {col: str(col_fix)}, inplace = True)
           for col in target_train.columns:
-            if col.startswith('col_') == False:
-              col_fix = 'col_' + str(col)
+            if col.startswith('_') == False:
+              col_fix = '_' + str(col)
             else:
               col_fix = str(col)
             col_fix = re.sub(r'[^a-zA-Z0-9]', '_', str(col_fix))
