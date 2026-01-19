@@ -689,7 +689,7 @@ if st.session_state['df_pp'] is not None:
               with st.spinner('Plotting permutation feature importance...', show_time = True):
                 st.write('• Permutation Feature Importance (PFI):')
                 pfi = best_model_explainer.model_parts(random_state = 42)
-                pfi_fig: go.Figure = pfi.plot(show = False)
+                pfi_fig: go.Figure = pfi.plot(show = False, max_vars = 7)
                 pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 300 if len(feature_train.columns) >= 6 else 250,
                                                                                     width = None,
                                                                                     autosize = True,
@@ -896,7 +896,7 @@ if st.session_state['df_pp'] is not None:
 
               with st.spinner('Plotting permutation feature importance...', show_time = True):
                 st.write('• Permutation Feature Importance (PFI):')
-                pfi = best_model_explainer.model_parts(random_state = 42)
+                pfi = best_model_explainer.model_parts(random_state = 42, max_vars = 7)
                 pfi_fig: go.Figure = pfi.plot(show = False)
                 pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 300 if len(feature_train.columns) >= 6 else 250,
                                                                                     width = None,
