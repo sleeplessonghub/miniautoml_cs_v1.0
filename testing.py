@@ -16,6 +16,7 @@ import lightgbm as lgbm
 from sklearn.metrics import r2_score, root_mean_squared_error, mean_absolute_error, mean_absolute_percentage_error, classification_report, f1_score
 import dalex as dx
 import plotly.graph_objects as go
+import re
 
 # Title call
 st.title('Mini AutoML (Cross-Sectional) v1.0')
@@ -504,6 +505,46 @@ if st.session_state['df_pp'] is not None:
             if resampled == True:
               feature_train_balanced.drop(columns = col_names_num_vif, inplace = True)
             st.write('✅ — VIF multicollinearity diagnostic complete!')
+          
+          # Column name string processing error and overlap fix (modeling bug fix)
+          for col in feature_train.columns:
+            if col.startswith('col_') == False:
+              col_fix = 'col_' + str(col)
+            else:
+              col_fix = str(col)
+            col_fix = re.sub(r'[^a-zA-Z0-9]', '_', str(col_fix))
+            if len(col_fix) >= 30:
+              col_fix = col_fix[:13] + '...' + col_fix[-14:]
+            feature_train.rename(columns = {col: str(col_fix)}, inplace = True)
+            feature_test.rename(columns = {col: str(col_fix)}, inplace = True)
+            if resampled == True:
+              feature_train_balanced.rename(columns = {col: str(col_fix)}, inplace = True)
+          for col in target_train.columns:
+            if col.startswith('col_') == False:
+              col_fix = 'col_' + str(col)
+            else:
+              col_fix = str(col)
+            col_fix = re.sub(r'[^a-zA-Z0-9]', '_', str(col_fix))
+            if len(col_fix) >= 30:
+              col_fix = col_fix[:13] + '...' + col_fix[-14:]
+            target_train.rename(columns = {col: str(col_fix)}, inplace = True)
+            target_test.rename(columns = {col: str(col_fix)}, inplace = True)
+            if resampled == True:
+              target_train_balanced.rename(columns = {col: str(col_fix)}, inplace = True)
+          
+          cols = list(feature_train.columns)
+          unique_cols = set(cols)
+          for x in unique_cols:
+            num = 0
+            for i in range(0, len(cols)):
+              if cols[i] == x:
+                num = num + 1
+                if num >= 2:
+                  cols[i] = cols[i] + '_' + str(num)
+          feature_train.columns = cols
+          feature_test.columns = cols
+          if resampled == True:
+            feature_train_balanced.columns = cols
           
           st.session_state['data_tracker'] = st.session_state['data_tracker'] + str(feature_train.columns.tolist()) # To be used for new data check for ML (column name change)
           
