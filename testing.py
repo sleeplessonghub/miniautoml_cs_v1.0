@@ -62,7 +62,7 @@ if st.session_state['df_pp'] is not None:
   # Dataset unusable column cleaning
   original_columns = [col for col in df_pp.columns]
   for col in original_columns:
-    if col.startswith('Unnamed:') or len(df_pp) == df_pp[col].isna().sum() or df_pp[col].nunique() == 1:
+    if col.startswith('unnamed:') or len(df_pp) == df_pp[col].isna().sum() or df_pp[col].nunique() == 1:
       df_pp.drop(col, axis = 1, inplace = True)
 
   # Dataset column name/object values leading/trailing white space cleaning
