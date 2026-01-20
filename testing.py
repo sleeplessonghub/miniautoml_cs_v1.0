@@ -56,6 +56,9 @@ if st.session_state['df_pp'] is not None:
   # Session state variable assignment
   df_pp = st.session_state['df_pp']
 
+  # Setting lowercase column names for better UI (pre-data preview)
+  df_pp.columns = df_pp.columns.str.lower()
+
   # Dataset unusable column cleaning
   original_columns = [col for col in df_pp.columns]
   for col in original_columns:
@@ -548,6 +551,15 @@ if st.session_state['df_pp'] is not None:
           feature_test.columns = cols
           if resampled == True:
             feature_train_balanced.columns = cols
+          
+          # Setting lowercase column names for better UI (pre-ML)
+          feature_train.columns = feature_train.columns.str.lower()
+          target_train.columns = target_train.columns.str.lower()
+          if resampled == True:
+            feature_train_balanced.columns = feature_train_balanced.columns.str.lower()
+            target_train_balanced.columns = target_train_balanced.columns.str.lower()
+          feature_test.columns = feature_test.columns.str.lower()
+          target_test.columns = target_test.columns.str.lower()
           
           st.session_state['data_tracker'] = st.session_state['data_tracker'] + str(feature_train.columns.tolist()) # To be used for new data check for ML (column name change)
           
