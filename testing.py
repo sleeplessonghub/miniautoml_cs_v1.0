@@ -441,7 +441,8 @@ if st.session_state['df_pp'] is not None:
           
           train.reset_index(drop = True, inplace = True)
           test.reset_index(drop = True, inplace = True)
-          st.write('✅ — Target encoding complete!')
+          if col_names_hc:
+            st.write('✅ — Target encoding complete!')
 
           # Feature/target split
           dep_var = target_encoded if is_object == True else target # Fuck it -> tired of checking condition everytime target is called
@@ -476,6 +477,8 @@ if st.session_state['df_pp'] is not None:
           if is_object == True:
             undersampler = RandomUnderSampler(random_state = 42)
             feature_train_balanced, target_train_balanced = undersampler.fit_resample(feature_train, target_train)
+            feature_train_balanced.reset_index(drop = True, inplace = True)
+            target_train_balanced.reset_index(drop = True, inplace = True)
             resampled = True
             st.write('✅ — Undersampling for imbalanced target complete!')
             st.write(f'⋯ {len(feature_train_balanced)} rows left for feature (train-balanced) set post-undersampling!')
@@ -690,7 +693,7 @@ if st.session_state['df_pp'] is not None:
                 st.write('• Permutation Feature Importance (PFI):')
                 pfi = best_model_explainer.model_parts(random_state = 42)
                 pfi_fig: go.Figure = pfi.plot(show = False)
-                pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 300 if len(feature_train.columns) >= 6 else 250,
+                pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 310 if len(feature_train.columns) >= 10 else 300 if len(feature_train.columns) >= 6 else 250,
                                                                                     width = None,
                                                                                     autosize = True,
                                                                                     title_font_size = 16,
@@ -719,13 +722,13 @@ if st.session_state['df_pp'] is not None:
             elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
 
               st.text(tw.dedent(
-                  f'''
+                  f"""
                   > Explainable Artificial Intelligence (XAI)
 
                   • Best Model - {st.session_state['best_model_name'][5:]}
                   • Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {st.session_state['best_model_rmse']:.4f}
                   • Loss Function - Root Mean Squared Error (RMSE)
-                  '''
+                  """
               ).strip())
 
               with st.spinner('Plotting permutation feature importance...', show_time = True):
@@ -898,7 +901,7 @@ if st.session_state['df_pp'] is not None:
                 st.write('• Permutation Feature Importance (PFI):')
                 pfi = best_model_explainer.model_parts(random_state = 42)
                 pfi_fig: go.Figure = pfi.plot(show = False)
-                pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 300 if len(feature_train.columns) >= 6 else 250,
+                pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 310 if len(feature_train.columns) >= 10 else 300 if len(feature_train.columns) >= 6 else 250,
                                                                                     width = None,
                                                                                     autosize = True,
                                                                                     title_font_size = 16,
@@ -927,13 +930,13 @@ if st.session_state['df_pp'] is not None:
             elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
 
               st.text(tw.dedent(
-                  f'''
+                  f"""
                   > Explainable Artificial Intelligence (XAI)
 
                   • Best Model - {st.session_state['best_model_name'][5:]}
                   • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {st.session_state['best_model_f1'] * 100:.2f}%
                   • Loss Function - Area Above the Curve (1-AUC)
-                  '''
+                  """
               ).strip())
 
               with st.spinner('Plotting permutation feature importance...', show_time = True):
