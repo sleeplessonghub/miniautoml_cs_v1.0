@@ -98,19 +98,23 @@ if st.session_state['df_pp'] is not None:
         """
         Specify column data type!
 
-        * Specify 'Nominal' for classification target variable
-        * Apply 'Identification' labeling only to a single column
+        * Apply 'Identification' labeling only to a single column for duplicated values cleaning (optional)
         """
     ).strip())
     for col in col_names:
-      data_type = st.selectbox(f"'{col}' column data type is:", ('-', 'Identification', 'Float', 'Integer', 'Ordinal', 'Nominal', 'Drop'), accept_new_options = False)
+      data_type = st.selectbox(f"'{col}' column data type is:", ('-', 'Identification', 'Numerical', 'Categorical', 'Drop'), accept_new_options = False)
       if data_type == '-':
         unassigned_count = unassigned_count + 1
       elif data_type == 'Identification':
         id_count = id_count + 1
-      elif data_type == 'Float' or data_type == 'Integer' or data_type == 'Ordinal' or data_type == 'Nominal':
+      elif data_type == 'Numerical' or data_type == 'Categorical':
+        if data_type == 'Numerical':
+          data_type = 'Float'
+        elif data_type == 'Categorical':
+          data_type = 'Nominal' # Simplification of column type specification without breaking down subsequent codes
         valid_assigned_count = valid_assigned_count + 1
       col_types.append(data_type)
+    st.write('')
     submitted = st.form_submit_button('Confirm type specification')
 
   st.session_state['data_tracker'] = st.session_state['data_tracker'] + ''.join(col_types) # To be used for new data check for ML (column types)
@@ -376,7 +380,6 @@ if st.session_state['df_pp'] is not None:
             if target_class == '-':
               unassigned_count_2 = unassigned_count_2 + 1
             is_object = True
-        st.write('')
         submitted_2 = st.form_submit_button('Confirm target assignment')
       
       st.session_state['data_tracker'] = st.session_state['data_tracker'] + target # To be used for new data check for ML (target column)
