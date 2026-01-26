@@ -115,7 +115,7 @@ if st.session_state['df_pp'] is not None:
         valid_assigned_count = valid_assigned_count + 1
       col_types.append(data_type)
     submitted = st.form_submit_button('Confirm type specification')
-    st.html('<div style = "margin-bottom: 2px;"></div>')
+    st.html('<div style = "margin-bottom: 0px;"></div>')
 
   st.session_state['data_tracker'] = st.session_state['data_tracker'] + ''.join(col_types) # To be used for new data check for ML (column types)
 
