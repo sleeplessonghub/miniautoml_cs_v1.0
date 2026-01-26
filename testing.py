@@ -350,7 +350,7 @@ if st.session_state['df_pp'] is not None:
       elif len(train.columns) > 5:
         st.write('Target Variable Selection (Scrollable):')
       train_info = pd.DataFrame({'Variables': train.columns, 'Non-Null Count': train.count(numeric_only = False), 'Data Type': train.dtypes}).reset_index(drop = True)
-      train_info['Data Type'] = train_info['Data Type'].str.map({'float64': 'Numerical', 'object': 'Categorical'})
+      train_info['Data Type'] = train_info['Data Type'].map({'float64': 'Numerical', 'object': 'Categorical'})
       st.dataframe(train_info.astype(str), height = 213, hide_index = True)
       unassigned_count_2 = 0
       target = None
