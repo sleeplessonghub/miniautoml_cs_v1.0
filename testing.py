@@ -82,7 +82,7 @@ if st.session_state['df_pp'] is not None:
   st.write('✅ — Dataset upload and conversion to a pandas dataframe complete!')
   st.write('✅ — Dataset unusable column and white space cleaning complete!')
   st.write('Dataset Preview:')
-  st.dataframe(df_pp.head().map(lambda x: f'{x:.4f}' if isinstance(x, float) else str(x)))
+  st.dataframe(df_pp.head().map(lambda x: f'{int(x)}' if isinstance(x, float) and x.is_integer() else str(round(x, 4)) if isinstance(x, float) else str(x)))
   st.write(f'⋯ {len(df_pp)} initial rows for analysis!')
   if 'col_names' not in st.session_state:
     st.session_state['col_names'] = None
@@ -378,7 +378,10 @@ if st.session_state['df_pp'] is not None:
               st.write('Class 1 Label Selection:')
             elif train[target].nunique() > 5:
               st.write('Class 1 Label Selection (Scrollable):')
-            st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().map(lambda x: f'{x:.4f}' if isinstance(x, float) else str(x)), height = 213 if train[target].nunique() > 5 else 'auto', hide_index = True, column_config = {target: st.column_config.Column(width = 180), 'Category Frequency': st.column_config.Column(width = 200)})
+            st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().map(lambda x: f'{int(x)}' if isinstance(x, float) and x.is_integer() else str(round(x, 4)) if isinstance(x, float) else str(x)),
+                         height = 213 if train[target].nunique() > 5 else 'auto',
+                         hide_index = True,
+                         column_config = {target: st.column_config.Column(width = 180), 'Category Frequency': st.column_config.Column(width = 200)})
             target_class_options = ['-'] + train[target].unique().tolist()
             target_class = st.selectbox('Select a class 1 label:', (target_class_options), accept_new_options = False)
             if target_class == '-':
