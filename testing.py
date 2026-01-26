@@ -374,7 +374,7 @@ if st.session_state['df_pp'] is not None:
           if train[target].dtypes == float or train[target].dtypes == int:
             is_object = False
           elif train[target].dtypes == object:
-            st.dataframe(train[target].value_counts(sort = True).astype(str), column_config = {target: st.column_config.Column(width = 200), "count": st.column_config.Column(width = 200)})
+            st.dataframe(train[target].value_counts(sort = True).astype(str), column_config = {target: st.column_config.Column(width = 250), "count": st.column_config.Column(width = 200)})
             target_class_options = ['-'] + train[target].unique().tolist()
             target_class = st.selectbox('Select a class 1 label:', (target_class_options), accept_new_options = False)
             if target_class == '-':
