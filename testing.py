@@ -93,7 +93,7 @@ if st.session_state['df_pp'] is not None:
   id_count = 0
   unassigned_count = 0
   valid_assigned_count = 0
-  with st.form('data_type_specification_form', height = 250):
+  with st.form('data_type_specification_form', height = 275):
     st.write(tw.dedent(
         """
         Specify column data type!
