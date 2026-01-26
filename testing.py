@@ -93,7 +93,7 @@ if st.session_state['df_pp'] is not None:
   id_count = 0
   unassigned_count = 0
   valid_assigned_count = 0
-  with st.form('data_type_specification_form', height = 350):
+  with st.form('data_type_specification_form', height = 360):
     st.write(tw.dedent(
         """
         Specify column data type!
@@ -376,10 +376,10 @@ if st.session_state['df_pp'] is not None:
           elif train[target].dtypes == object:
             if train[target].nunique() <= 5:
               st.write('Class 1 Label Selection:')
-              st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().astype(str), height = 'auto', hide_index = True, column_config = {target: st.column_config.Column(width = 190), 'Category Frequency': st.column_config.Column(width = 200)})
+              st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().astype(str), height = 'auto', hide_index = True, column_config = {target: st.column_config.Column(width = 185), 'Category Frequency': st.column_config.Column(width = 200)})
             elif train[target].nunique() > 5:
               st.write('Class 1 Label Selection (Scrollable):')
-              st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().astype(str), height = 213, hide_index = True, column_config = {target: st.column_config.Column(width = 190), 'Category Frequency': st.column_config.Column(width = 200)})
+              st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().astype(str), height = 213, hide_index = True, column_config = {target: st.column_config.Column(width = 185), 'Category Frequency': st.column_config.Column(width = 200)})
             target_class_options = ['-'] + train[target].unique().tolist()
             target_class = st.selectbox('Select a class 1 label:', (target_class_options), accept_new_options = False)
             if target_class == '-':
