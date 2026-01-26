@@ -20,6 +20,7 @@ import re
 
 # Title call
 st.title('Mini AutoML (Cross-Sectional) v1.0')
+st.markdown('**App is best used on desktop.**')
 
 # Layer guard initializations
 if 'df_pp' not in st.session_state:
@@ -32,7 +33,7 @@ if 'submitted_2_ref' not in st.session_state:
 st.session_state['data_tracker'] = '' # To be used for new data check for ML (initialization/reset)
 
 # Dataset upload and conversion to a pandas dataframe
-uploaded_file = st.file_uploader("Upload a '.csv' or '.xlsx' file", type = ['csv', 'xlsx'], accept_multiple_files = False)
+uploaded_file = st.file_uploader("Upload a '.csv' or '.xlsx' file...", type = ['csv', 'xlsx'], accept_multiple_files = False)
 if uploaded_file:
   try:
     if uploaded_file.name.endswith('.csv'):
@@ -81,7 +82,7 @@ if st.session_state['df_pp'] is not None:
   st.write('✅ — Dataset upload and conversion to a pandas dataframe complete!')
   st.write('✅ — Dataset unusable column and white space cleaning complete!')
   st.write('Dataset Preview:')
-  st.dataframe(df_pp.head())
+  st.dataframe(df_pp.head().astype(str))
   st.write(f'⋯ {len(df_pp)} initial rows for analysis!')
   if 'col_names' not in st.session_state:
     st.session_state['col_names'] = None
@@ -342,7 +343,7 @@ if st.session_state['df_pp'] is not None:
       # Target variable selection
       st.write('Target Variable Selection:')
       train_info = pd.DataFrame({'Variables': train.columns, 'Non-Null Count': train.count(numeric_only = False), 'Data Type': train.dtypes}).reset_index(drop = True)
-      st.dataframe(train_info, hide_index = True)
+      st.dataframe(train_info.astype(str), hide_index = True)
       unassigned_count_2 = 0
       target = None
       target_class = None
@@ -372,7 +373,7 @@ if st.session_state['df_pp'] is not None:
             if target_class == '-':
               unassigned_count_2 = unassigned_count_2 + 1
             is_object = True
-        submitted_2 = st.form_submit_button('Confirm target variable/class assignment')
+        submitted_2 = st.form_submit_button('Confirm target assignment')
       
       st.session_state['data_tracker'] = st.session_state['data_tracker'] + target # To be used for new data check for ML (target column)
       if is_object == False or target_class == None:
