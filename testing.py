@@ -93,7 +93,7 @@ if st.session_state['df_pp'] is not None:
   id_count = 0
   unassigned_count = 0
   valid_assigned_count = 0
-  with st.form('data_type_specification_form', height = 270):
+  with st.form('data_type_specification_form', height = 310):
     st.write(tw.dedent(
         """
         Specify column data type!
@@ -361,9 +361,9 @@ if st.session_state['df_pp'] is not None:
             """
             Select a target variable for machine learning!
 
-            * Categorical target variables are always treated as Nominal variables
+            * Categorical target variables are always treated as nominal variables
             * One-vs-Rest (OvR) encoding would be applied to categorical targets with more than 2 classes
-            * User must select a class 1 label for the chosen categorical target variable's classes
+            * User must select a class 1 label for the chosen categorical target variable's categories
             """
         ).strip())
         target_options = ['-'] + train.columns.tolist()
@@ -376,10 +376,10 @@ if st.session_state['df_pp'] is not None:
           elif train[target].dtypes == object:
             if train[target].nunique() <= 5:
               st.write('Class 1 Label Selection:')
-              st.dataframe(train[target].value_counts(sort = True).astype(str), height = 'auto', column_config = {target: st.column_config.Column(width = 325), 'count': st.column_config.Column(width = 200)})
+              st.dataframe(train[target].value_counts(sort = True).rename('Categorical Frequency').reset_index().astype(str), height = 'auto', column_config = {target: st.column_config.Column(width = 325), 'Categorical Frequency': st.column_config.Column(width = 200)})
             elif train[target].nunique() > 5:
               st.write('Class 1 Label Selection (Scrollable):')
-              st.dataframe(train[target].value_counts(sort = True).astype(str), height = 213, column_config = {target: st.column_config.Column(width = 325), 'count': st.column_config.Column(width = 200)})
+              st.dataframe(train[target].value_counts(sort = True).rename('Categorical Frequency').reset_index().astype(str), height = 213, column_config = {target: st.column_config.Column(width = 325), 'Categorical Frequency': st.column_config.Column(width = 200)})
             target_class_options = ['-'] + train[target].unique().tolist()
             target_class = st.selectbox('Select a class 1 label:', (target_class_options), accept_new_options = False)
             if target_class == '-':
