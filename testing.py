@@ -51,6 +51,14 @@ if uploaded_file:
 else:
   st.info('Upload a file of the requested format from your device to begin the analysis!', icon = 'ℹ️')
 
+# Quick session reset button initialization
+def reset_app():
+  for key in st.session_state.keys():
+    del st.session_state[key]
+  st.rerun()
+
+st.button('Reset Session', on_click = reset_app)
+
 # Guarded execution block (layer 1)
 if st.session_state['df_pp'] is not None:
 
@@ -351,7 +359,7 @@ if st.session_state['df_pp'] is not None:
         st.write('Target Variable Selection (Scrollable):')
       train_info = pd.DataFrame({'Variables': train.columns, 'Non-Null Count': train.count(numeric_only = False), 'Data Type': train.dtypes}).reset_index(drop = True)
       train_info['Data Type'] = train_info['Data Type'].astype(str).map({'float64': 'Numerical', 'object': 'Categorical'})
-      st.dataframe(train_info.astype(str), height = 213, hide_index = True)
+      st.dataframe(train_info.astype(str), height = 213 if len(train.columns) > 5 else 'auto', hide_index = True)
       unassigned_count_2 = 0
       target = None
       target_class = None
@@ -362,7 +370,7 @@ if st.session_state['df_pp'] is not None:
             Select a target variable for machine learning!
 
             * Categorical target variables are always treated as nominal variables
-            * One-vs-Rest (OvR) encoding would be applied to categorical targets with more than 2 classes
+            * One-vs-Rest (OvR) encoding would be applied to cat. targets with more than 2 categories
             * User must select a class 1 label for the chosen categorical target variable's categories
             """
         ).strip())
@@ -376,10 +384,9 @@ if st.session_state['df_pp'] is not None:
           elif train[target].dtypes == object:
             if train[target].nunique() <= 5:
               st.write('Class 1 Label Selection:')
-              st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().astype(str), height = 'auto', hide_index = True, column_config = {target: st.column_config.Column(width = 180), 'Category Frequency': st.column_config.Column(width = 200)})
             elif train[target].nunique() > 5:
               st.write('Class 1 Label Selection (Scrollable):')
-              st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().astype(str), height = 213, hide_index = True, column_config = {target: st.column_config.Column(width = 180), 'Category Frequency': st.column_config.Column(width = 200)})
+            st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().astype(str), height = 213 train[target].nunique() > 5 else 'auto', hide_index = True, column_config = {target: st.column_config.Column(width = 180), 'Category Frequency': st.column_config.Column(width = 200)})
             target_class_options = ['-'] + train[target].unique().tolist()
             target_class = st.selectbox('Select a class 1 label:', (target_class_options), accept_new_options = False)
             if target_class == '-':
@@ -714,17 +721,18 @@ if st.session_state['df_pp'] is not None:
                   '''
               ).strip())
 
-              with st.spinner('Plotting permutation feature importance...', show_time = True):
-                st.write('• Permutation Feature Importance (PFI):')
-                pfi = best_model_explainer.model_parts(random_state = 42)
-                pfi_fig: go.Figure = pfi.plot(show = False)
-                pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 295 if len(feature_train.columns) >= 6 else 250,
-                                                                                    width = None,
-                                                                                    autosize = True,
-                                                                                    title_font_size = 16,
-                                                                                    font = dict(size = 11 if len(feature_train.columns) >= 6 else 13)).update_traces(hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left'),
-                                                                                                                                                                    hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
-                st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
+              if len(feature_train.columns) >= 2:
+                with st.spinner('Plotting permutation feature importance...', show_time = True):
+                  st.write('• Permutation Feature Importance (PFI):')
+                  pfi = best_model_explainer.model_parts(random_state = 42)
+                  pfi_fig: go.Figure = pfi.plot(show = False)
+                  pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 295 if len(feature_train.columns) >= 6 else 250,
+                                                                                      width = None,
+                                                                                      autosize = True,
+                                                                                      title_font_size = 16,
+                                                                                      font = dict(size = 11 if len(feature_train.columns) >= 6 else 13)).update_traces(hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left'),
+                                                                                                                                                                      hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
+                  st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
               with st.spinner('Plotting partial dependence plots...', show_time = True):
                 st.write('• Partial Dependence Plots (PDPs):')
@@ -756,9 +764,10 @@ if st.session_state['df_pp'] is not None:
                   """
               ).strip())
 
-              with st.spinner('Plotting permutation feature importance...', show_time = True):
-                st.write('• Permutation Feature Importance (PFI):')
-                st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
+              if len(feature_train.columns) >= 2:
+                with st.spinner('Plotting permutation feature importance...', show_time = True):
+                  st.write('• Permutation Feature Importance (PFI):')
+                  st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
               
               with st.spinner('Plotting partial dependence plots...', show_time = True):
                 st.write('• Partial Dependence Plots (PDPs):')
@@ -922,17 +931,18 @@ if st.session_state['df_pp'] is not None:
                   '''
               ).strip())
 
-              with st.spinner('Plotting permutation feature importance...', show_time = True):
-                st.write('• Permutation Feature Importance (PFI):')
-                pfi = best_model_explainer.model_parts(random_state = 42)
-                pfi_fig: go.Figure = pfi.plot(show = False)
-                pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 295 if len(feature_train.columns) >= 6 else 250,
-                                                                                    width = None,
-                                                                                    autosize = True,
-                                                                                    title_font_size = 16,
-                                                                                    font = dict(size = 11 if len(feature_train.columns) >= 6 else 13)).update_traces(hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left'),
-                                                                                                                                                                    hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
-                st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
+              if len(feature_train.columns) >= 2:
+                with st.spinner('Plotting permutation feature importance...', show_time = True):
+                  st.write('• Permutation Feature Importance (PFI):')
+                  pfi = best_model_explainer.model_parts(random_state = 42)
+                  pfi_fig: go.Figure = pfi.plot(show = False)
+                  pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 295 if len(feature_train.columns) >= 6 else 250,
+                                                                                      width = None,
+                                                                                      autosize = True,
+                                                                                      title_font_size = 16,
+                                                                                      font = dict(size = 11 if len(feature_train.columns) >= 6 else 13)).update_traces(hoverlabel = dict(bgcolor = '#8dc5cc', align = 'left'),
+                                                                                                                                                                      hovertemplate = '⤷ Loss after permutation: <b>%{x:.4f}</b>' + '<br>⤷ Drop-out loss change: <b>%{text}</b>' + '<extra></extra>')
+                  st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
               with st.spinner('Plotting partial dependence plots...', show_time = True):
                 st.write('• Partial Dependence Plots (PDPs):')
@@ -964,9 +974,10 @@ if st.session_state['df_pp'] is not None:
                   """
               ).strip())
 
-              with st.spinner('Plotting permutation feature importance...', show_time = True):
-                st.write('• Permutation Feature Importance (PFI):')
-                st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
+              if len(feature_train.columns) >= 2:
+                with st.spinner('Plotting permutation feature importance...', show_time = True):
+                  st.write('• Permutation Feature Importance (PFI):')
+                  st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
 
               with st.spinner('Plotting partial dependence plots...', show_time = True):
                 st.write('• Partial Dependence Plots (PDPs):')
