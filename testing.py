@@ -93,12 +93,12 @@ if st.session_state['df_pp'] is not None:
   id_count = 0
   unassigned_count = 0
   valid_assigned_count = 0
-  with st.form('data_type_specification_form', height = 300):
+  with st.form('data_type_specification_form', height = 250):
     st.write(tw.dedent(
         """
         Specify column data type!
 
-        * Apply 'Identification' labeling only to a single column for duplicated values cleaning (optional)
+        * Apply 'Identification' labeling only to a single column for deduplication (optional)
         """
     ).strip())
     for col in col_names:
@@ -114,8 +114,8 @@ if st.session_state['df_pp'] is not None:
           data_type = 'Nominal' # Simplification of column type specification without breaking down subsequent codes
         valid_assigned_count = valid_assigned_count + 1
       col_types.append(data_type)
-    st.write('')
     submitted = st.form_submit_button('Confirm type specification')
+    st.write('')
 
   st.session_state['data_tracker'] = st.session_state['data_tracker'] + ''.join(col_types) # To be used for new data check for ML (column types)
 
@@ -350,6 +350,7 @@ if st.session_state['df_pp'] is not None:
       elif len(train.columns) > 5:
         st.write('Target Variable Selection (Scrollable):')
       train_info = pd.DataFrame({'Variables': train.columns, 'Non-Null Count': train.count(numeric_only = False), 'Data Type': train.dtypes}).reset_index(drop = True)
+      train_info['Data Type'] = train_info['Data Type'].str.map({'float64': 'Numerical', 'object': 'Categorical'})
       st.dataframe(train_info.astype(str), height = 213, hide_index = True)
       unassigned_count_2 = 0
       target = None
@@ -360,8 +361,7 @@ if st.session_state['df_pp'] is not None:
             """
             Select a target variable for machine learning!
 
-            * 'object' variables are either Ordinal/Nominal according to the previous type specification
-            * Categorical target variables are always treated as Nominal
+            * Categorical target variables are always treated as Nominal variables
             * One-vs-Rest (OvR) encoding would be applied to categorical targets with more than 2 classes
             * User must select a class 1 label for the chosen categorical target variable's classes
             """
