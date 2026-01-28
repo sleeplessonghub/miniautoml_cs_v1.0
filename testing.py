@@ -767,7 +767,7 @@ if st.session_state['df_pp'] is not None:
                       """
                   ).strip())
                   st.dataframe(target_encoded_vars.map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
-                              height = 426 if len(target_encoded_vars) > 10 else 'auto',
+                              height = 383 if len(target_encoded_vars) > 10 else 'auto',
                               hide_index = True)
 
               st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
@@ -807,7 +807,7 @@ if st.session_state['df_pp'] is not None:
                       """
                   ).strip())
                   st.dataframe(target_encoded_vars.map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
-                              height = 426 if len(target_encoded_vars) > 10 else 'auto',
+                              height = 383 if len(target_encoded_vars) > 10 else 'auto',
                               hide_index = True)
           
           elif is_object == True: # Classification modeling
@@ -1009,7 +1009,7 @@ if st.session_state['df_pp'] is not None:
                       """
                   ).strip())
                   st.dataframe(target_encoded_vars.map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
-                              height = 426 if len(target_encoded_vars) > 10 else 'auto',
+                              height = 383 if len(target_encoded_vars) > 10 else 'auto',
                               hide_index = True)
               
               st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
@@ -1049,7 +1049,7 @@ if st.session_state['df_pp'] is not None:
                       """
                   ).strip())
                   st.dataframe(target_encoded_vars.map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
-                              height = 426 if len(target_encoded_vars) > 10 else 'auto',
+                              height = 383 if len(target_encoded_vars) > 10 else 'auto',
                               hide_index = True)
 
           # E
