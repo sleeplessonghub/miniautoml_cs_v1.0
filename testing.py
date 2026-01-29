@@ -462,6 +462,12 @@ if st.session_state['df_pp'] is not None:
             test[col] = t_encoder.transform(test[[col]]).flatten()
             target_encoded_vars[f'{col}_Post_Enc'] = train[col].round(4)
           
+          if not target_encoded_vars.empty:
+            for col in train.columns:
+              if f'{col}_Pre_Enc' in target_encoded_vars:
+                locals()[f'{col}_Results'] = pd.DataFrame({'Category': target_encoded_vars[f'{col}_Pre_Enc'], 'Encoded Value': target_encoded_vars[f'{col}_Post_Enc']})
+                locals()[f'{col}_Table'] = locals()[f'{col}_Results'].groupby('Category')['Encoded Value'].agg(['min', 'max'])
+          
           train.reset_index(drop = True, inplace = True)
           test.reset_index(drop = True, inplace = True)
           if col_names_hc:
@@ -546,8 +552,10 @@ if st.session_state['df_pp'] is not None:
             if resampled == True:
               feature_train_balanced.rename(columns = {col: str(col_fix)}, inplace = True)
             if not target_encoded_vars.empty:
-              target_encoded_vars.rename(columns = {f'{col}_Pre_Enc': f'{str(col_fix)}_Pre_Enc'}, inplace = True)
-              target_encoded_vars.rename(columns = {f'{col}_Post_Enc': f'{str(col_fix)}_Post_Enc'}, inplace = True)
+              target_encoded_vars.rename(columns = {f'{col}_Pre_Enc': f'{col_fix}_Pre_Enc'}, inplace = True)
+              target_encoded_vars.rename(columns = {f'{col}_Post_Enc': f'{col_fix}_Post_Enc'}, inplace = True)
+              locals()[f'{col_fix}_Table'] = locals()[f'{col}_Table']
+              del locals()[f'{col}_Table']
           for col in target_train.columns:
             if col.startswith('_') == False:
               col_fix = '_' + str(col)
@@ -755,20 +763,26 @@ if st.session_state['df_pp'] is not None:
                   st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
               
               if not target_encoded_vars.empty:
-                with st.spinner('Creating target encoding interpretation table...', show_time = True):
+                with st.spinner('Creating target encoding interpretation table(s)...', show_time = True):
+
                   st.text(tw.dedent(
                       """
                       > Target Encoded Variable(s) Interpretation
 
-                      • 'Pre_Enc' Suffix = Pre-Target Encoded Variable(s) (Unit: Original Categories)
-                      • 'Post_Enc' Suffix = Post-Target Encoded Variable(s) (Unit: Average Value of Target per Category)
+                      • Encoded Unit = Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)
 
-                      • Interpretation Table:
+                      • Interpretation Table(s):
                       """
                   ).strip())
-                  st.dataframe(target_encoded_vars.map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
-                              height = 386 if len(target_encoded_vars) > 10 else 'auto',
-                              hide_index = True)
+                  
+                  interpretation_tables_list = []
+                  for col in target_encoded_vars:
+                    if col.endswith('_Pre_Enc'):
+                      interpretation_tables_list.append(f'{col[:-8]}_Table')
+                  interpretation_tabs_list = [f'{col}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  range_max = len(interpretation_list)
+                  for i in range(0, range_max, 1):
+                    st.tabs([interpretation_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
 
               st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
 
@@ -795,20 +809,26 @@ if st.session_state['df_pp'] is not None:
                   st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
               
               if not target_encoded_vars.empty:
-                with st.spinner('Creating target encoding interpretation table...', show_time = True):
+                with st.spinner('Creating target encoding interpretation table(s)...', show_time = True):
+
                   st.text(tw.dedent(
                       """
                       > Target Encoded Variable(s) Interpretation
 
-                      • 'Pre_Enc' Suffix = Pre-Target Encoded Variable(s) (Unit: Original Categories)
-                      • 'Post_Enc' Suffix = Post-Target Encoded Variable(s) (Unit: Average Value of Target per Category)
+                      • Encoded Unit = Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)
 
-                      • Interpretation Table:
+                      • Interpretation Table(s):
                       """
                   ).strip())
-                  st.dataframe(target_encoded_vars.map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
-                              height = 386 if len(target_encoded_vars) > 10 else 'auto',
-                              hide_index = True)
+                  
+                  interpretation_tables_list = []
+                  for col in target_encoded_vars:
+                    if col.endswith('_Pre_Enc'):
+                      interpretation_tables_list.append(f'{col[:-8]}_Table')
+                  interpretation_tabs_list = [f'{col}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  range_max = len(interpretation_list)
+                  for i in range(0, range_max, 1):
+                    st.tabs([interpretation_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
           
           elif is_object == True: # Classification modeling
 
@@ -997,20 +1017,26 @@ if st.session_state['df_pp'] is not None:
                   st.plotly_chart(pdp_fig_ss, width = 'stretch', config = {'displayModeBar': False})
               
               if not target_encoded_vars.empty:
-                with st.spinner('Creating target encoding interpretation table...', show_time = True):
+                with st.spinner('Creating target encoding interpretation table(s)...', show_time = True):
+
                   st.text(tw.dedent(
                       """
                       > Target Encoded Variable(s) Interpretation
 
-                      • 'Pre_Enc' Suffix = Pre-Target Encoded Variable(s) (Unit: Original Categories)
-                      • 'Post_Enc' Suffix = Post-Target Encoded Variable(s) (Unit: Probability of Class 1 Target per Category)
+                      • Encoded Unit = Probability of Class 1 Target per Category (Min/Max 2-Fold Cross-Validation)
 
-                      • Interpretation Table:
+                      • Interpretation Table(s):
                       """
                   ).strip())
-                  st.dataframe(target_encoded_vars.map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
-                              height = 386 if len(target_encoded_vars) > 10 else 'auto',
-                              hide_index = True)
+                  
+                  interpretation_tables_list = []
+                  for col in target_encoded_vars:
+                    if col.endswith('_Pre_Enc'):
+                      interpretation_tables_list.append(f'{col[:-8]}_Table')
+                  interpretation_tabs_list = [f'{col}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  range_max = len(interpretation_list)
+                  for i in range(0, range_max, 1):
+                    st.tabs([interpretation_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
               
               st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
             
@@ -1037,20 +1063,26 @@ if st.session_state['df_pp'] is not None:
                   st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
               
               if not target_encoded_vars.empty:
-                with st.spinner('Creating target encoding interpretation table...', show_time = True):
+                with st.spinner('Creating target encoding interpretation table(s)...', show_time = True):
+
                   st.text(tw.dedent(
                       """
                       > Target Encoded Variable(s) Interpretation
 
-                      • 'Pre_Enc' Suffix = Pre-Target Encoded Variable(s) (Unit: Original Categories)
-                      • 'Post_Enc' Suffix = Post-Target Encoded Variable(s) (Unit: Probability of Class 1 Target per Category)
+                      • Encoded Unit = Probability of Class 1 Target per Category (Min/Max 2-Fold Cross-Validation)
 
-                      • Interpretation Table:
+                      • Interpretation Table(s):
                       """
                   ).strip())
-                  st.dataframe(target_encoded_vars.map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
-                              height = 386 if len(target_encoded_vars) > 10 else 'auto',
-                              hide_index = True)
+                  
+                  interpretation_tables_list = []
+                  for col in target_encoded_vars:
+                    if col.endswith('_Pre_Enc'):
+                      interpretation_tables_list.append(f'{col[:-8]}_Table')
+                  interpretation_tabs_list = [f'{col}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  range_max = len(interpretation_list)
+                  for i in range(0, range_max, 1):
+                    st.tabs([interpretation_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
 
           # E
 
