@@ -789,7 +789,7 @@ if st.session_state['df_pp'] is not None:
                                   column_config = {'Category': st.column_config.Column(width = 220),
                                                    'min': st.column_config.Column('Encoded Value Min.', width = 200),
                                                    'max': st.column_config.Column('Encoded Value Max.', width = 200),
-                                                   'mean': st.columns_config.Column('Encoded Value Mean', width = 200)})
+                                                   'mean': st.column_config.Column('Encoded Value Mean', width = 200)})
 
               st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
 
@@ -841,7 +841,7 @@ if st.session_state['df_pp'] is not None:
                                   column_config = {'Category': st.column_config.Column(width = 220),
                                                    'min': st.column_config.Column('Encoded Value Min.', width = 200),
                                                    'max': st.column_config.Column('Encoded Value Max.', width = 200),
-                                                   'mean': st.columns_config.Column('Encoded Value Mean', width = 200)})
+                                                   'mean': st.column_config.Column('Encoded Value Mean', width = 200)})
           
           elif is_object == True: # Classification modeling
 
@@ -1055,7 +1055,7 @@ if st.session_state['df_pp'] is not None:
                                   column_config = {'Category': st.column_config.Column(width = 220),
                                                    'min': st.column_config.Column('Encoded Value Min.', width = 200),
                                                    'max': st.column_config.Column('Encoded Value Max.', width = 200),
-                                                   'mean': st.columns_config.Column('Encoded Value Mean', width = 200)})
+                                                   'mean': st.column_config.Column('Encoded Value Mean', width = 200)})
               
               st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
             
@@ -1107,7 +1107,7 @@ if st.session_state['df_pp'] is not None:
                                   column_config = {'Category': st.column_config.Column(width = 220),
                                                    'min': st.column_config.Column('Encoded Value Min.', width = 200),
                                                    'max': st.column_config.Column('Encoded Value Max.', width = 200),
-                                                   'mean': st.columns_config.Column('Encoded Value Mean', width = 200)})
+                                                   'mean': st.column_config.Column('Encoded Value Mean', width = 200)})
 
           # E
 
