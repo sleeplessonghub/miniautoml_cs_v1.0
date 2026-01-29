@@ -780,10 +780,12 @@ if st.session_state['df_pp'] is not None:
                   for col in target_encoded_vars:
                     if col.endswith('_Pre_Enc'):
                       interpretation_tables_list.append(locals()[f'{col[:-8]}_Table'])
-                  interpretation_tabs_list = [f'{col[:-8]}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list)
                   for i, tab in enumerate(tabs):
-                    tab.dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))))
+                    tab.dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
+                                  386 if len(target_encoded_vars) > 10 else 'auto',
+                                  column_config = {interpretation_tables_list[i]: st.column_config.Column(width = 200)})
 
               st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
 
@@ -826,10 +828,12 @@ if st.session_state['df_pp'] is not None:
                   for col in target_encoded_vars:
                     if col.endswith('_Pre_Enc'):
                       interpretation_tables_list.append(locals()[f'{col[:-8]}_Table'])
-                  interpretation_tabs_list = [f'{col[:-8]}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list)
                   for i, tab in enumerate(tabs):
-                    tab.dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))))
+                    tab.dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
+                                  386 if len(target_encoded_vars) > 10 else 'auto',
+                                  column_config = {interpretation_tables_list[i]: st.column_config.Column(width = 200)})
           
           elif is_object == True: # Classification modeling
 
@@ -1034,10 +1038,12 @@ if st.session_state['df_pp'] is not None:
                   for col in target_encoded_vars:
                     if col.endswith('_Pre_Enc'):
                       interpretation_tables_list.append(locals()[f'{col[:-8]}_Table'])
-                  interpretation_tabs_list = [f'{col[:-8]}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list)
                   for i, tab in enumerate(tabs):
-                    tab.dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))))
+                    tab.dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
+                                  386 if len(target_encoded_vars) > 10 else 'auto',
+                                  column_config = {interpretation_tables_list[i]: st.column_config.Column(width = 200)})
               
               st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
             
@@ -1080,10 +1086,12 @@ if st.session_state['df_pp'] is not None:
                   for col in target_encoded_vars:
                     if col.endswith('_Pre_Enc'):
                       interpretation_tables_list.append(locals()[f'{col[:-8]}_Table'])
-                  interpretation_tabs_list = [f'{col[:-8]}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list)
                   for i, tab in enumerate(tabs):
-                    tab.dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))))
+                    tab.dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))),
+                                  386 if len(target_encoded_vars) > 10 else 'auto',
+                                  column_config = {interpretation_tables_list[i]: st.column_config.Column(width = 200)})
 
           # E
 
