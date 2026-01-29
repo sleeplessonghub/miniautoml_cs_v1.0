@@ -781,9 +781,9 @@ if st.session_state['df_pp'] is not None:
                     if col.endswith('_Pre_Enc'):
                       interpretation_tables_list.append(f'{col[:-8]}_Table')
                   interpretation_tabs_list = [f'{col}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
-                  range_max = len(interpretation_list)
+                  range_max = len(interpretation_tabs_list)
                   for i in range(0, range_max, 1):
-                    st.tabs([interpretation_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
+                    st.tabs([interpretation_tabs_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
 
               st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
 
@@ -827,9 +827,9 @@ if st.session_state['df_pp'] is not None:
                     if col.endswith('_Pre_Enc'):
                       interpretation_tables_list.append(f'{col[:-8]}_Table')
                   interpretation_tabs_list = [f'{col}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
-                  range_max = len(interpretation_list)
+                  range_max = len(interpretation_tabs_list)
                   for i in range(0, range_max, 1):
-                    st.tabs([interpretation_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
+                    st.tabs([interpretation_tabs_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
           
           elif is_object == True: # Classification modeling
 
@@ -1035,9 +1035,9 @@ if st.session_state['df_pp'] is not None:
                     if col.endswith('_Pre_Enc'):
                       interpretation_tables_list.append(f'{col[:-8]}_Table')
                   interpretation_tabs_list = [f'{col}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
-                  range_max = len(interpretation_list)
+                  range_max = len(interpretation_tabs_list)
                   for i in range(0, range_max, 1):
-                    st.tabs([interpretation_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
+                    st.tabs([interpretation_tabs_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
               
               st.session_state['data_tracker_check'] = st.session_state['data_tracker'] # Data tracker check update
             
@@ -1081,9 +1081,9 @@ if st.session_state['df_pp'] is not None:
                     if col.endswith('_Pre_Enc'):
                       interpretation_tables_list.append(f'{col[:-8]}_Table')
                   interpretation_tabs_list = [f'{col}_Table' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
-                  range_max = len(interpretation_list)
+                  range_max = len(interpretation_tabs_list)
                   for i in range(0, range_max, 1):
-                    st.tabs([interpretation_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
+                    st.tabs([interpretation_tabs_list])[i].dataframe(interpretation_tables_list[i].map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else (str(round(x, 4)) if isinstance(x, float) else str(x))), hide_index = True)
 
           # E
 
