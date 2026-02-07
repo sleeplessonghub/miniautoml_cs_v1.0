@@ -489,8 +489,8 @@ if st.session_state['df_pp'] is not None:
           # scaler = StandardScaler()
           # if dep_var not in col_names_num and is_object == False:
           #   col_names_num.append(dep_var)
-          # for col in col_names_hc:
-          #   col_names_num.append(col)
+          for col in col_names_hc:
+            col_names_num.append(col) # Kept due to use for VIF
           # 
           # for col in col_names_num:
           #   if col == dep_var:
@@ -719,7 +719,7 @@ if st.session_state['df_pp'] is not None:
               model_rmses = [rmse_ln, rmse_dt_reg, rmse_lgbm_reg]
 
               best_model_rmse = st.session_state['best_model_rmse'] = min(model_rmses)
-              best_model_fit = model_fits[model_rmses.index(best_model_rmse)]
+              best_model_fit = st.session_state['best_model_fit'] = model_fits[model_rmses.index(best_model_rmse)]
               best_model_name = st.session_state['best_model_name'] = model_names[model_fits.index(best_model_fit)]
 
               best_model_explainer = dx.Explainer(best_model_fit, feature_train, target_train, label = best_model_name, verbose = False)
@@ -984,7 +984,7 @@ if st.session_state['df_pp'] is not None:
               model_f1s = [logit_f1, logit_f1_bal, dt_f1, dt_f1_bal, lgbm_f1, lgbm_f1_bal]
 
               best_model_f1 = st.session_state['best_model_f1'] = max(model_f1s)
-              best_model_fit = model_fits[model_f1s.index(best_model_f1)]
+              best_model_fit = st.session_state['best_model_fit'] = model_fits[model_f1s.index(best_model_f1)]
               best_model_name = st.session_state['best_model_name'] = model_names[model_fits.index(best_model_fit)]
 
               best_feature = feature_train_balanced if best_model_name.endswith('(Undersampled)') else feature_train
@@ -1112,6 +1112,36 @@ if st.session_state['df_pp'] is not None:
                                                    'min': st.column_config.Column('Encoded Value Min.', width = 100),
                                                    'max': st.column_config.Column('Encoded Value Max.', width = 100),
                                                    'mean': st.column_config.Column('Encoded Value Mean', width = 100)})
+
+          # ---------------------------------------------------------------------------------------------------------------------------------------
+
+          # Preparing saved best model fit for new predictions
+          st.divider()
+          st.header('⸻ Model Deployment 🎯')
+          
+          prediction_list = []
+          with st.form('best_model_deployment_form', height = 355):
+            st.write(tw.dedent(
+                '''
+                Input value(s) for new predictions!
+
+                * Input numerically encoded values for categories of target encoded variables
+                '''
+            ).strip())
+            st.write('Input value(s) for new predictions!')
+            for col in feature_train.columns:
+              if feature_train[col].nunique() > 2:
+                num_val = st.number_input(f"Insert '{col}' column value:", value = None, placeholder = 'Type a number...')
+                prediction_list.append(num_val)
+              if feature_train[col].nunique() == 2:
+                cat_val = st.radio(f"Select '{col}' variable state:", ['True', 'False'], index = None, horizontal = True)
+                cat_val = 1 if cat_val == 'True' else 0
+                prediction_list.append(cat_val)
+            submitted_3 = st.form_submit_button('Confirm new input value(s)')
+            st.html('<div style = "margin-bottom: 0.5px;"></div>')
+          
+          st.session_state['best_model_fit'].predict([prediction_list])
+          st.write('✅ — Best model new prediction complete!')
 
           # E
 
