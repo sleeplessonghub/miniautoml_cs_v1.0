@@ -1186,7 +1186,7 @@ if st.session_state['df_pp'] is not None:
                 probability_txt = 'Class 1 Probability' if pred_scalar == 1 else 'Class 0 Probability'
                 class_outcome = 'Class 1' if pred_scalar == 1 else 'Class 0'
 
-                st.text(tw.dedent(
+                st.markdown(tw.dedent(
                     f"""
                     ▼ Best Classification Model Prediction  
 
