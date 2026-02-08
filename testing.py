@@ -720,7 +720,7 @@ if st.session_state['df_pp'] is not None:
               model_fits = [ln, dt_reg, lgbm_reg]
               model_rmses = [rmse_ln, rmse_dt_reg, rmse_lgbm_reg]
 
-              st.session_state['best_model_r2'] = max([r2_ln, r2_dt_reg, r2_lgbm_reg])
+              st.session_state['best_model_r2'] = max([r2_ln, r2_dt_reg, r2_lgbm_reg]) # Used to show best model test set r2 for new predictions reliability
 
               best_model_rmse = st.session_state['best_model_rmse'] = min(model_rmses)
               best_model_fit = st.session_state['best_model_fit'] = model_fits[model_rmses.index(best_model_rmse)]
@@ -1125,12 +1125,12 @@ if st.session_state['df_pp'] is not None:
           st.write('')
           
           prediction_list = []
-          with st.form('best_model_deployment_form', height = 300):
+          with st.form('best_model_deployment_form', height = 255):
             st.write(tw.dedent(
                 """
                 Input data for new predictions!
 
-                * Fill the provided input field(s) with numeric characters and decimal periods '.' only
+                * Fill the provided input field(s) with numeric characters and decimal periods (.) only
                 * Filling the provided input field(s) with non-numeric strings would result in an error call
                 * Input numerical mappings for target encoded categories of high cardinality cat. variables
                 * User must select a boolean variable state for One Hot Encoded (OHE) categorical variables
@@ -1167,16 +1167,35 @@ if st.session_state['df_pp'] is not None:
 
               if is_object == False:
                 
-                st.write(tw.dedent(
-                    f'''
+                st.text(tw.dedent(
+                    f"""
                     > Best Regression Model Prediction
 
+                    • Best Regression Model: {st.session_state['best_model_name'][5:]}
                     • Best Model Test Set R2 Score: {st.session_state['best_model_r2'] * 100:.2f}%
-                    • {st.session_state['best_model_name'][5:]} Prediction: {new_prediction[0]:.4f}
-                    '''
+                    • Best Model Target Value Prediction (Incl. New Data Input): {new_prediction[0]:.4f}
+                    """
                 ))
+              
+              elif is_object == True:
 
-          # E
+                probability = st.session_state['best_model_fit'].predict_proba([prediction_list])[0]
+                probability_disp = probability[1] if new_prediction[0] == 1 else probability[0]
+                probability_txt = 'Class 1 Probability' if new_prediction[0] == 1 else 'Class 0 Probability'
+                class_outcome = 'Class 1' if new_prediction[0] == 1 else 'Class 0'
+
+                st.text(tw.dedent(
+                    f"""
+                    > Best Classification Model Prediction
+
+                    • Best Classification Model: {st.session_state['best_model_name'][5:]}
+                    • Best Model Test Set F1 Score: {st.session_state['best_model_f1'] * 100:.2f}%
+                    • Best Model {probability_txt}: {probability_disp * 100:.2f}%
+                    • Best Model Target Class Prediction (Incl. New Data Input): {class_outcome}
+                    """
+                ).strip())
+
+              # E
 
 else:
   st.subheader('No file upload detected 💤')
