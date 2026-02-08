@@ -1174,7 +1174,7 @@ if st.session_state['df_pp'] is not None:
 
                     ├─ Best Regression Model: {st.session_state['best_model_name'][5:]}  
                     ├─ Best Model Test Set R2 Score: {st.session_state['best_model_r2'] * 100:.2f}%  
-                    ├─ Best Model Target Value Prediction: {float(new_prediction[0]):.4f}  
+                    ├─ Best Model Target Value Prediction: {float(new_prediction.flatten()[0]):.4f}  
                     """
                 ))
               
