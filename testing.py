@@ -157,8 +157,8 @@ if st.session_state['df_pp'] is not None:
           df_pp.drop(columns = col_names[index], inplace = True)
           col_drop_list.append(col_names[index])
       if col_drop_list:
-        st.write('✅ — ID duplicated values removal and targeted column dropping complete!')
-        st.write(f'⋯ {len(df_pp)} rows left post-duplicate cleaning and unused column dropping!')
+        st.write('✅ — ID column deduplication and select column dropping complete!')
+        st.write(f'⋯ {len(df_pp)} rows left post-deduplication and select column dropping!')
 
       # 'col_names'/'col_types' parallel lists' items update
       for col in col_drop_list:
@@ -365,7 +365,7 @@ if st.session_state['df_pp'] is not None:
             """
             Select a target variable for machine learning!
 
-            * Categorical target variables are always treated as nominal variables
+            * Categorical target variables are always treated as nominal variables (without ordering)
             * One-vs-Rest (OvR) encoding would be applied to cat. targets with more than 2 categories
             * User must select a class 1 label for the chosen categorical target variable's categories
             """
@@ -420,7 +420,7 @@ if st.session_state['df_pp'] is not None:
             idx = col_names.index(target)
             del col_names[idx]
             del col_types[idx] # 'col_names'/'col_types' lists are no longer in use for manipulation past this line as they're no longer parallel
-            st.write('✅ — Categorical target binary encoding complete!')
+            st.write('✅ — Categorical target one-vs-rest encoding complete!')
           
           # Single cardinality categorical variables cleaning
           col_names_2 = [col for col in train.columns]
@@ -511,7 +511,7 @@ if st.session_state['df_pp'] is not None:
             feature_train_balanced.reset_index(drop = True, inplace = True)
             target_train_balanced.reset_index(drop = True, inplace = True)
             resampled = True
-            st.write('✅ — Undersampling for imbalanced target complete!')
+            st.write('✅ — Undersampling for target class imbalance complete!')
             st.write(f'⋯ {len(feature_train_balanced)} rows left for feature (train-balanced) set post-undersampling!')
             st.write(f'⋯ {len(target_train_balanced)} rows left for target (train-balanced) set post-undersampling!')
           else:
@@ -1122,10 +1122,10 @@ if st.session_state['df_pp'] is not None:
           # Preparing saved best model fit for new predictions
           st.divider()
           st.header('⸻ Model Deployment 🎯')
-          st.write('')
+          st.info('Execute new individual predictions based on the previously best fitted model!', icon = 'ℹ️')
           
           prediction_list = []
-          with st.form('best_model_deployment_form', height = 275):
+          with st.form('best_model_deployment_form', height = 265):
             st.write(tw.dedent(
                 """
                 Input data for new predictions!
@@ -1160,7 +1160,7 @@ if st.session_state['df_pp'] is not None:
             elif any(isinstance(x, str) for x in prediction_list):
               st.error('Detected non-numeric string as input for new prediction!', icon = '🛑')
             else:
-              st.write('✅ — New prediction input saved!') # Guarded execution block (layer 4)
+              st.write('✅ — New prediction input data saved!') # Guarded execution block (layer 4)
           
               new_prediction = st.session_state['best_model_fit'].predict([prediction_list])
               st.write('✅ — Best fitted model new prediction complete!')
@@ -1173,7 +1173,7 @@ if st.session_state['df_pp'] is not None:
 
                     • Best Regression Model: {st.session_state['best_model_name'][5:]}
                     • Best Model Test Set R2 Score: {st.session_state['best_model_r2'] * 100:.2f}%
-                    • Best Model Target Value Prediction (New Data Input): {new_prediction[0]:.4f}
+                    • Best Model Target Value Prediction: {new_prediction[0]:.4f}
                     """
                 ))
               
@@ -1191,7 +1191,7 @@ if st.session_state['df_pp'] is not None:
                     • Best Classification Model: {st.session_state['best_model_name'][5:]}
                     • Best Model Test Set F1 Score: {st.session_state['best_model_f1'] * 100:.2f}%
                     • Best Model {probability_txt}: {probability_disp * 100:.2f}%
-                    • Best Model Target Class Prediction (New Data Input): {class_outcome}
+                    • Best Model Target Class Prediction: {class_outcome}
                     """
                 ).strip())
 
