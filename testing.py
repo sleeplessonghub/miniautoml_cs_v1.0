@@ -670,47 +670,47 @@ if st.session_state['df_pp'] is not None:
             
             st.markdown(tw.dedent(
                 f'''
-                1. Models Used  
+                ├── Models Used  
 
-                1.1 Linear Model — Linear Regression  
-                1.2 Tree-Based Model — Decision Tree Regressor (DT)  
-                1.3 Ensemble Model — Light Gradient Boosting Machine Regressor (LGBM)  
+                │ ├── Linear Model — Linear Regression  
+                │ ├── Tree-Based Model — Decision Tree Regressor (DT)  
+                │ └── Ensemble Model — Light Gradient Boosting Machine Regressor (LGBM)  
 
-                2. Train/Test Sets Sample Size Check  
+                ├── Train/Test Sets Sample Size Validation  
+                
+                │ ├── Feature (Train) Sample Size (n): {len(feature_train)}  
+                │ ├── Target (Train) Sample Size (n): {len(target_train)}  
+                │ ├── Feature (Test) Sample Size (n): {len(feature_test)}  
+                │ └── Target (Test) Sample Size (n): {len(target_test)}  
 
-                2.1 Feature (Train) Sample Size (n): {len(feature_train)}  
-                2.2 Target (Train) Sample Size (n): {len(target_train)}  
-                2.3 Feature (Test) Sample Size (n): {len(feature_test)}  
-                2.4 Target (Test) Sample Size (n): {len(target_test)}  
+                ├── Train/Test Sets Dimensionality Validation  
 
-                3. Train/Test Sets Dimensionality Check  
+                │ ├── Feature (Train) Column Count: {len(feature_train.columns)}  
+                │ ├── Target (Train) Column Count: {len(target_train.columns)}  
+                │ ├── Feature (Test) Column Count: {len(feature_test.columns)}  
+                │ └── Target (Test) Column Count: {len(target_test.columns)}  
 
-                3.1 Feature (Train) Column Count: {len(feature_train.columns)}  
-                3.2 Target (Train) Column Count: {len(target_train.columns)}  
-                3.3 Feature (Test) Column Count: {len(feature_test.columns)}  
-                3.4 Target (Test) Column Count: {len(target_test.columns)}  
+                ├── Model Fit Evaluation Metrics (Test Set Predictions)  
 
-                4. Model Fit Evaluation Metrics (Test Set Predictions)  
+                │ ├── Coefficient of Determination (R2 Score - Unit: Percentage)  
+                │ │ ├── Linear Regression - R2 Score: {r2_ln * 100:.2f}%  
+                │ │ ├── DT Regressor - R2 Score: {r2_dt_reg * 100:.2f}%  
+                │ │ ├── LGBM Regressor - R2 Score: {r2_lgbm_reg * 100:.2f}%  
 
-                4.1 Coefficient of Determination (R2 Score - Unit: Percentage)  
-                4.1.1 Linear Regression - R2 Score: {r2_ln * 100:.2f}%  
-                4.1.2 DT Regressor - R2 Score: {r2_dt_reg * 100:.2f}%  
-                4.1.3 LGBM Regressor - R2 Score: {r2_lgbm_reg * 100:.2f}%  
+                │ ├── Root Mean Squared Error (RMSE - Unit: Per Target)  
+                │ │ ├── Linear Regression - RMSE: {rmse_ln:.4f}  
+                │ │ ├── DT Regressor - RMSE: {rmse_dt_reg:.4f}  
+                │ │ ├── LGBM Regressor - RMSE: {rmse_lgbm_reg:.4f}  
 
-                4.2 Root Mean Squared Error (RMSE - Unit: Same as Target)  
-                4.2.1 Linear Regression - RMSE: {rmse_ln:.4f}  
-                4.2.2 DT Regressor - RMSE: {rmse_dt_reg:.4f}  
-                4.2.3 LGBM Regressor - RMSE: {rmse_lgbm_reg:.4f}  
+                │ ├── Mean Absolute Error (MAE - Unit: Per Target)  
+                │ │ ├── Linear Regression - MAE: {mae_ln:.4f}  
+                │ │ ├── DT Regressor - MAE: {mae_dt_reg:.4f}  
+                │ │ ├── LGBM Regressor - MAE: {mae_lgbm_reg:.4f}  
 
-                4.3 Mean Absolute Error (MAE - Unit: Same as Target)  
-                4.3.1 Linear Regression - MAE: {mae_ln:.4f}  
-                4.3.2 DT Regressor - MAE: {mae_dt_reg:.4f}  
-                4.3.3 LGBM Regressor - MAE: {mae_lgbm_reg:.4f}  
-
-                4.4 Mean Absolute Percentage Error (MAPE - Unit: Percentage)  
-                4.4.1 Linear Regression - MAPE: {mape_ln * 100:.2f}%  
-                4.4.2 DT Regressor - MAPE: {mape_dt_reg * 100:.2f}%  
-                4.4.3 LGBM Regressor - MAPE: {mape_lgbm_reg * 100:.2f}%  
+                │ ├── Mean Absolute Percentage Error (MAPE - Unit: Percentage)  
+                │ │ ├── Linear Regression - MAPE: {mape_ln * 100:.2f}%  
+                │ │ ├── DT Regressor - MAPE: {mape_dt_reg * 100:.2f}%  
+                │ │ ├── LGBM Regressor - MAPE: {mape_lgbm_reg * 100:.2f}%  
                 '''
             ).strip())
 
