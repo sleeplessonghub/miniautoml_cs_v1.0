@@ -828,7 +828,7 @@ if st.session_state['df_pp'] is not None:
                       """
                       ▼ Target Encoded Variable(s) Interpretation  
 
-                      ├─ Encoded Unit : Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)  
+                      ├─ Encoded Unit - Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)  
 
                       ▼ Interpretation Table(s):  
                       """
@@ -937,46 +937,46 @@ if st.session_state['df_pp'] is not None:
             # Classification report
             st.write('#### Modeling Report 📋')
             
-            st.text(tw.dedent(
+            st.markdown(tw.dedent(
                 f'''
-                > Models Used
+                ▼ Models Used  
                 
-                • Linear Model — Logistic Regression
-                • Tree-Based Model — Decision Tree Classifier (DT)
-                • Ensemble Model — Light Gradient Boosting Machine Classifier (LGBM)
+                ├─ Linear Model - Logistic Regression  
+                ├─ Tree-Based Model - Decision Tree Classifier (DT)  
+                ├─ Ensemble Model - Light Gradient Boosting Machine Classifier (LGBM)  
 
-                > Train/Test Sets Sample Size Check
+                ▼ Train/Test Sets Sample Size Validation  
 
-                • Feature (Train) Sample Size (n): {len(feature_train)}
-                • Target (Train) Sample Size (n): {len(target_train)}
-                • Feature (Train-Balanced) Sample Size (n): {len(feature_train_balanced)}
-                • Target (Train-Balanced) Sample Size (n): {len(target_train_balanced)}
-                • Feature (Test) Sample Size (n): {len(feature_test)}
-                • Target (Test) Sample Size (n): {len(target_test)}
+                ├─ Feature (Train) Sample Size (n): {len(feature_train)}  
+                ├─ Target (Train) Sample Size (n): {len(target_train)}  
+                ├─ Feature (Train-Balanced) Sample Size (n): {len(feature_train_balanced)}  
+                ├─ Target (Train-Balanced) Sample Size (n): {len(target_train_balanced)}  
+                ├─ Feature (Test) Sample Size (n): {len(feature_test)}  
+                ├─ Target (Test) Sample Size (n): {len(target_test)}  
 
-                > Train/Test Sets Dimensionality Check
+                ▼ Train/Test Sets Dimensionality Validation  
 
-                • Feature (Train) Column Count: {len(feature_train.columns)}
-                • Target (Train) Column Count: {len(target_train.columns)}
-                • Feature (Train-Balanced) Column Count: {len(feature_train_balanced.columns)}
-                • Target (Train-Balanced) Column Count: {len(target_train_balanced.columns)}
-                • Feature (Test) Column Count: {len(feature_test.columns)}
-                • Target (Test) Column Count: {len(target_test.columns)}
+                ├─ Feature (Train) Column Count: {len(feature_train.columns)}  
+                ├─ Target (Train) Column Count: {len(target_train.columns)}  
+                ├─ Feature (Train-Balanced) Column Count: {len(feature_train_balanced.columns)}  
+                ├─ Target (Train-Balanced) Column Count: {len(target_train_balanced.columns)}  
+                ├─ Feature (Test) Column Count: {len(feature_test.columns)}  
+                ├─ Target (Test) Column Count: {len(target_test.columns)}  
                 '''
             ).strip())
 
-            st.write('---- Model Fit Evaluation Metrics (Test Set Predictions)')
-            st.write('• Logistic Regression:')
+            st.write('▼ Model Fit Evaluation Metrics (Test Set Predictions)')
+            st.write('├─ Logistic Regression:')
             st.code(logit_metrics, language = None, width = 513)
-            st.write('• Logistic Regression (Undersampled):')
+            st.write('├─ Logistic Regression (Undersampled):')
             st.code(logit_rs_metrics, language = None, width = 513)
-            st.write('• DT Classifier:')
+            st.write('├─ DT Classifier:')
             st.code(dt_class_metrics, language = None, width = 513)
-            st.write('• DT Classifier (Undersampled):')
+            st.write('├─ DT Classifier (Undersampled):')
             st.code(dt_class_rs_metrics, language = None, width = 513)
-            st.write('• LGBM Classifier:')
+            st.write('├─ LGBM Classifier:')
             st.code(lgbm_class_metrics, language = None, width = 513)
-            st.write('• LGBM Classifier (Undersampled):')
+            st.write('├─ LGBM Classifier (Undersampled):')
             st.code(lgbm_class_rs_metrics, language = None, width = 513)
 
             # Classification best model explainer (dalex) and target encoded variables interpretation
@@ -997,19 +997,19 @@ if st.session_state['df_pp'] is not None:
 
               best_model_explainer = dx.Explainer(best_model_fit, best_feature, best_target, label = best_model_name, verbose = False)
 
-              st.text(tw.dedent(
+              st.markdown(tw.dedent(
                   f'''
-                  > Explainable Artificial Intelligence (XAI)
+                  ▼ Explainable Artificial Intelligence (XAI)  
 
-                  • Best Model - {best_model_name[5:]}
-                  • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {best_model_f1 * 100:.2f}%
-                  • Loss Function - Area Above the Curve (1-AUC)
+                  ├─ Best Model - {best_model_name[5:]}  
+                  ├─ Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {best_model_f1 * 100:.2f}%  
+                  ├─ Loss Function - Area Above the Curve (1-AUC)  
                   '''
               ).strip())
 
               if len(feature_train.columns) >= 2:
                 with st.spinner('Plotting permutation feature importance...', show_time = True):
-                  st.write('• Permutation Feature Importance (PFI):')
+                  st.write('▼ Permutation Feature Importance (PFI):')
                   pfi = best_model_explainer.model_parts(random_state = 42)
                   pfi_fig: go.Figure = pfi.plot(show = False)
                   pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 295 if len(feature_train.columns) >= 6 else 250,
@@ -1021,7 +1021,7 @@ if st.session_state['df_pp'] is not None:
                   st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
               with st.spinner('Plotting partial dependence plots...', show_time = True):
-                st.write('• Partial Dependence Plots (PDPs):')
+                st.write('▼ Partial Dependence Plots (PDPs):')
                 pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
                 pdp_fig: go.Figure = pdp.plot(show = False, y_title = '') # for rant, see regression PDPs
                 st.session_state['pdp_height'] = round(len(feature_train.columns) * 175) if len(feature_train.columns) >= 2 else 400
@@ -1039,13 +1039,13 @@ if st.session_state['df_pp'] is not None:
               if not target_encoded_vars.empty:
                 with st.spinner('Creating target encoding interpretation table(s)...', show_time = True):
 
-                  st.text(tw.dedent(
+                  st.markdown(tw.dedent(
                       """
-                      > Target Encoded Variable(s) Interpretation
+                      ▼ Target Encoded Variable(s) Interpretation  
 
-                      • Encoded Unit : Probability of Class 1 Target per Category (Min/Max 2-Fold Cross-Validation)
+                      ├─ Encoded Unit - Probability of Class 1 Target per Category (Min/Max 2-Fold Cross-Validation)  
 
-                      • Interpretation Table(s):
+                      ▼ Interpretation Table(s):  
                       """
                   ).strip())
                   
@@ -1069,36 +1069,36 @@ if st.session_state['df_pp'] is not None:
             
             elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
 
-              st.text(tw.dedent(
+              st.markdown(tw.dedent(
                   f"""
-                  > Explainable Artificial Intelligence (XAI)
+                  ▼ Explainable Artificial Intelligence (XAI)  
 
-                  • Best Model - {st.session_state['best_model_name'][5:]}
-                  • Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {st.session_state['best_model_f1'] * 100:.2f}%
-                  • Loss Function - Area Above the Curve (1-AUC)
+                  ├─ Best Model - {st.session_state['best_model_name'][5:]}  
+                  ├─ Evaluation Metric for Determination of Best Model - Class 1 F1 Score at {st.session_state['best_model_f1'] * 100:.2f}%  
+                  ├─ Loss Function - Area Above the Curve (1-AUC)  
                   """
               ).strip())
 
               if len(feature_train.columns) >= 2:
                 with st.spinner('Plotting permutation feature importance...', show_time = True):
-                  st.write('• Permutation Feature Importance (PFI):')
+                  st.write('▼ Permutation Feature Importance (PFI):')
                   st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
 
               with st.spinner('Plotting partial dependence plots...', show_time = True):
-                st.write('• Partial Dependence Plots (PDPs):')
+                st.write('▼ Partial Dependence Plots (PDPs):')
                 with st.container(height = 500 if len(feature_train.columns) >= 3 else 385 if len(feature_train.columns) == 2 else 435, border = True):
                   st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
               
               if not target_encoded_vars.empty:
                 with st.spinner('Creating target encoding interpretation table(s)...', show_time = True):
 
-                  st.text(tw.dedent(
+                  st.markdown(tw.dedent(
                       """
-                      > Target Encoded Variable(s) Interpretation
+                      ▼ Target Encoded Variable(s) Interpretation  
 
-                      • Encoded Unit : Probability of Class 1 Target per Category (Min/Max 2-Fold Cross-Validation)
+                      ├─ Encoded Unit - Probability of Class 1 Target per Category (Min/Max 2-Fold Cross-Validation)  
 
-                      • Interpretation Table(s):
+                      ▼ Interpretation Table(s):  
                       """
                   ).strip())
                   
@@ -1168,13 +1168,13 @@ if st.session_state['df_pp'] is not None:
 
               if is_object == False:
                 
-                st.text(tw.dedent(
+                st.markdown(tw.dedent(
                     f"""
-                    > Best Regression Model Prediction
+                    ▼ Best Regression Model Prediction  
 
-                    • Best Regression Model: {st.session_state['best_model_name'][5:]}
-                    • Best Model Test Set R2 Score: {st.session_state['best_model_r2'] * 100:.2f}%
-                    • Best Model Target Value Prediction: {float(new_prediction[0]):.4f}
+                    ├─ Best Regression Model: {st.session_state['best_model_name'][5:]}  
+                    ├─ Best Model Test Set R2 Score: {st.session_state['best_model_r2'] * 100:.2f}%  
+                    ├─ Best Model Target Value Prediction: {float(new_prediction[0]):.4f}  
                     """
                 ))
               
@@ -1188,12 +1188,12 @@ if st.session_state['df_pp'] is not None:
 
                 st.text(tw.dedent(
                     f"""
-                    > Best Classification Model Prediction
+                    ▼ Best Classification Model Prediction  
 
-                    • Best Classification Model: {st.session_state['best_model_name'][5:]}
-                    • Best Model Test Set F1 Score: {st.session_state['best_model_f1'] * 100:.2f}%
-                    • Best Model {probability_txt}: {probability_disp * 100:.2f}%
-                    • Best Model Target Class Prediction: {class_outcome}
+                    ├─ Best Classification Model: {st.session_state['best_model_name'][5:]}  
+                    ├─ Best Model Test Set F1 Score: {st.session_state['best_model_f1'] * 100:.2f}%  
+                    ├─ Best Model {probability_txt}: {probability_disp * 100:.2f}%  
+                    ├─ Best Model Target Class Prediction: {class_outcome}  
                     """
                 ).strip())
 
