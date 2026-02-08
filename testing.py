@@ -1,5 +1,6 @@
 # Dependency imports
 import streamlit as st
+st.set_page_config(page_title = 'Mini AutoML', page_icon = '📌', layout = 'centered')
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -667,7 +668,7 @@ if st.session_state['df_pp'] is not None:
             # Regression report
             st.write('#### Modeling Report 📋')
             
-            st.text(tw.dedent(
+            st.markdown(tw.dedent(
                 f'''
                 > Models Used
 
@@ -1122,10 +1123,10 @@ if st.session_state['df_pp'] is not None:
           # Preparing saved best model fit for new predictions
           st.divider()
           st.header('⸻ Model Deployment 🎯')
-          st.info('Execute new individual predictions based on the previously best fitted model!', icon = 'ℹ️')
+          st.info('Generate forecasts with new data based on the previously best fitted model!', icon = 'ℹ️')
           
           prediction_list = []
-          with st.form('best_model_deployment_form', height = 265):
+          with st.form('best_model_deployment_form', height = 270):
             st.write(tw.dedent(
                 """
                 Input data for new predictions!
@@ -1173,16 +1174,17 @@ if st.session_state['df_pp'] is not None:
 
                     • Best Regression Model: {st.session_state['best_model_name'][5:]}
                     • Best Model Test Set R2 Score: {st.session_state['best_model_r2'] * 100:.2f}%
-                    • Best Model Target Value Prediction: {new_prediction[0]:.4f}
+                    • Best Model Target Value Prediction: {float(new_prediction[0]):.4f}
                     """
                 ))
               
               elif is_object == True:
 
+                pred_scalar = int(new_prediction.flatten()[0])
                 probability = st.session_state['best_model_fit'].predict_proba([prediction_list])[0]
-                probability_disp = probability[1] if new_prediction[0] == 1 else probability[0]
-                probability_txt = 'Class 1 Probability' if new_prediction[0] == 1 else 'Class 0 Probability'
-                class_outcome = 'Class 1' if new_prediction[0] == 1 else 'Class 0'
+                probability_disp = probability[1].item() if pred_scalar == 1 else probability[0].item()
+                probability_txt = 'Class 1 Probability' if pred_scalar == 1 else 'Class 0 Probability'
+                class_outcome = 'Class 1' if pred_scalar == 1 else 'Class 0'
 
                 st.text(tw.dedent(
                     f"""
