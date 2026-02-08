@@ -1125,7 +1125,7 @@ if st.session_state['df_pp'] is not None:
           st.write('')
           
           prediction_list = []
-          with st.form('best_model_deployment_form', height = 255):
+          with st.form('best_model_deployment_form', height = 290):
             st.write(tw.dedent(
                 """
                 Input data for new predictions!
@@ -1173,7 +1173,7 @@ if st.session_state['df_pp'] is not None:
 
                     • Best Regression Model: {st.session_state['best_model_name'][5:]}
                     • Best Model Test Set R2 Score: {st.session_state['best_model_r2'] * 100:.2f}%
-                    • Best Model Target Value Prediction (Incl. New Data Input): {new_prediction[0]:.4f}
+                    • Best Model Target Value Prediction (New Data Input): {new_prediction[0]:.4f}
                     """
                 ))
               
@@ -1191,7 +1191,7 @@ if st.session_state['df_pp'] is not None:
                     • Best Classification Model: {st.session_state['best_model_name'][5:]}
                     • Best Model Test Set F1 Score: {st.session_state['best_model_f1'] * 100:.2f}%
                     • Best Model {probability_txt}: {probability_disp * 100:.2f}%
-                    • Best Model Target Class Prediction (Incl. New Data Input): {class_outcome}
+                    • Best Model Target Class Prediction (New Data Input): {class_outcome}
                     """
                 ).strip())
 
