@@ -672,9 +672,9 @@ if st.session_state['df_pp'] is not None:
                 f'''
                 ▼ Models Used  
 
-                ├─ Linear Model — Linear Regression  
-                ├─ Tree-Based Model — Decision Tree Regressor (DT)  
-                ├─ Ensemble Model — Light Gradient Boosting Machine Regressor (LGBM)  
+                ├─ Linear Model - Linear Regression  
+                ├─ Tree-Based Model - Decision Tree Regressor (DT)  
+                ├─ Ensemble Model - Light Gradient Boosting Machine Regressor (LGBM)  
 
                 ▼ Train/Test Sets Sample Size Validation  
                 
@@ -729,19 +729,19 @@ if st.session_state['df_pp'] is not None:
 
               best_model_explainer = dx.Explainer(best_model_fit, feature_train, target_train, label = best_model_name, verbose = False)
 
-              st.text(tw.dedent(
+              st.markdown(tw.dedent(
                   f'''
-                  > Explainable Artificial Intelligence (XAI)
+                  ▼ Explainable Artificial Intelligence (XAI)  
 
-                  • Best Model - {best_model_name[5:]}
-                  • Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {best_model_rmse:.4f}
-                  • Loss Function - Root Mean Squared Error (RMSE)
+                  ├─ Best Model - {best_model_name[5:]}  
+                  ├─ Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {best_model_rmse:.4f}  
+                  ├─ Loss Function - Root Mean Squared Error (RMSE)  
                   '''
               ).strip())
 
               if len(feature_train.columns) >= 2:
                 with st.spinner('Plotting permutation feature importance...', show_time = True):
-                  st.write('• Permutation Feature Importance (PFI):')
+                  st.write('▼ Permutation Feature Importance (PFI):')
                   pfi = best_model_explainer.model_parts(random_state = 42)
                   pfi_fig: go.Figure = pfi.plot(show = False)
                   pfi_fig_ss = st.session_state['pfi_fig_ss'] = pfi_fig.update_layout(height = 295 if len(feature_train.columns) >= 6 else 250,
@@ -753,7 +753,7 @@ if st.session_state['df_pp'] is not None:
                   st.plotly_chart(pfi_fig_ss, width = 'stretch', config = {'displayModeBar': False})
 
               with st.spinner('Plotting partial dependence plots...', show_time = True):
-                st.write('• Partial Dependence Plots (PDPs):')
+                st.write('▼ Partial Dependence Plots (PDPs):')
                 pdp = best_model_explainer.model_profile(random_state = 42, verbose = False)
                 pdp_fig: go.Figure = pdp.plot(show = False, y_title = '') # 'y_title' was a bitch to find (took hours!!!), had to dig through the dev's source code
                 st.session_state['pdp_height'] = round(len(feature_train.columns) * 175) if len(feature_train.columns) >= 2 else 400
@@ -771,13 +771,13 @@ if st.session_state['df_pp'] is not None:
               if not target_encoded_vars.empty:
                 with st.spinner('Creating target encoding interpretation table(s)...', show_time = True):
 
-                  st.text(tw.dedent(
+                  st.markdown(tw.dedent(
                       """
-                      > Target Encoded Variable(s) Interpretation
+                      ▼ Target Encoded Variable(s) Interpretation  
 
-                      • Encoded Unit : Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)
+                      ├─ Encoded Unit - Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)  
 
-                      • Interpretation Table(s):
+                      ▼ Interpretation Table(s):  
                       """
                   ).strip())
                   
@@ -801,36 +801,36 @@ if st.session_state['df_pp'] is not None:
 
             elif st.session_state['data_tracker_check'] == st.session_state['data_tracker']:
 
-              st.text(tw.dedent(
+              st.markdown(tw.dedent(
                   f"""
-                  > Explainable Artificial Intelligence (XAI)
+                  ▼ Explainable Artificial Intelligence (XAI)  
 
-                  • Best Model - {st.session_state['best_model_name'][5:]}
-                  • Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {st.session_state['best_model_rmse']:.4f}
-                  • Loss Function - Root Mean Squared Error (RMSE)
+                  ├─ Best Model - {st.session_state['best_model_name'][5:]}  
+                  ├─ Evaluation Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {st.session_state['best_model_rmse']:.4f}  
+                  ├─ Loss Function - Root Mean Squared Error (RMSE)  
                   """
               ).strip())
 
               if len(feature_train.columns) >= 2:
                 with st.spinner('Plotting permutation feature importance...', show_time = True):
-                  st.write('• Permutation Feature Importance (PFI):')
+                  st.write('▼ Permutation Feature Importance (PFI):')
                   st.plotly_chart(st.session_state['pfi_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
               
               with st.spinner('Plotting partial dependence plots...', show_time = True):
-                st.write('• Partial Dependence Plots (PDPs):')
+                st.write('▼ Partial Dependence Plots (PDPs):')
                 with st.container(height = 500 if len(feature_train.columns) >= 3 else 385 if len(feature_train.columns) == 2 else 435, border = True):
                   st.plotly_chart(st.session_state['pdp_fig_ss'], width = 'stretch', config = {'displayModeBar': False})
               
               if not target_encoded_vars.empty:
                 with st.spinner('Creating target encoding interpretation table(s)...', show_time = True):
 
-                  st.text(tw.dedent(
+                  st.markdown(tw.dedent(
                       """
-                      > Target Encoded Variable(s) Interpretation
+                      ▼ Target Encoded Variable(s) Interpretation  
 
-                      • Encoded Unit : Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)
+                      ├─ Encoded Unit : Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)  
 
-                      • Interpretation Table(s):
+                      ▼ Interpretation Table(s):  
                       """
                   ).strip())
                   
