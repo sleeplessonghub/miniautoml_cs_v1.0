@@ -29,6 +29,8 @@ if 'submitted_ref' not in st.session_state:
   st.session_state['submitted_ref'] = False # Layer 2 check
 if 'submitted_2_ref' not in st.session_state:
   st.session_state['submitted_2_ref'] = False # Layer 3 check
+if 'submitted_3_ref' not in st.session_state:
+  st.session_state['submitted_3_ref'] = False # Layer 4 check
 
 st.session_state['data_tracker'] = '' # To be used for new data check for ML (initialization/reset)
 
@@ -1123,24 +1125,42 @@ if st.session_state['df_pp'] is not None:
           with st.form('best_model_deployment_form', height = 355):
             st.write(tw.dedent(
                 '''
-                Input value(s) for new predictions!
+                Input data for new predictions!
 
-                * Input numerically encoded values for categories of target encoded variables
+                * Fill the provided input field(s) with numeric characters and decimal periods (.) only
+                * Filling the provided input field(s) with non-numeric strings would result in an error call
+                * Input numerical mappings for target encoded categories of high cardinality cat. variables
+                * User must select a boolean variable state for One Hot Encoded (OHE) categorical variables
                 '''
             ).strip())
             for col in feature_train.columns:
               if feature_train[col].nunique() > 2:
-                num_val = st.number_input(f"Insert '{col}' column value:", value = None, step = None, placeholder = 'Type a number...')
+                num_val = st.text_input(f"Insert '{col}' column value:", placeholder = 'Insert new data for prediction...')
+                try:
+                  num_val = float(num_val)
+                except:
+                  pass
                 prediction_list.append(num_val)
               if feature_train[col].nunique() == 2:
                 cat_val = st.radio(f"Select '{col}' variable state:", ['True', 'False'], index = None, horizontal = True)
-                cat_val = 1 if cat_val == 'True' else 0
+                cat_val = 1 if cat_val == 'True' else 0 if cat_val == 'False' else None
                 prediction_list.append(cat_val)
-            submitted_3 = st.form_submit_button('Confirm new input value(s)')
+            submitted_3 = st.form_submit_button('Confirm new data input')
             st.html('<div style = "margin-bottom: 0.5px;"></div>')
           
-          st.session_state['best_model_fit'].predict([prediction_list])
-          st.write('✅ — Best model new prediction complete!')
+          if submitted_3 == True:
+            st.session_state['submitted_3_ref'] = True
+
+          if st.session_state['submitted_3_ref'] == True:
+            if None in prediction_list or '' in prediction_list:
+              st.error('Detected empty input field/variable state without boolean selection', icon = '🛑')
+            elif any(isinstance(x, str) for x in prediction_list):
+              st.error('Detected non-numeric string as input for new data prediction', icon = '🛑')
+            else:
+              st.write('✅ — New prediction input saved!') # Guarded execution block (layer 4)
+          
+              st.session_state['best_model_fit'].predict([prediction_list])
+              st.write('✅ — Best fitted model new prediction complete!')
 
           # E
 
