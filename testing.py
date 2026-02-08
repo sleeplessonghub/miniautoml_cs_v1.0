@@ -668,7 +668,7 @@ if st.session_state['df_pp'] is not None:
             # Regression report
             st.write('#### Modeling Report 📋')
             
-            st.code(tw.dedent(
+            st.markdown(tw.dedent(
                 f'''
                 ├── Models Used  
 
@@ -712,7 +712,7 @@ if st.session_state['df_pp'] is not None:
                 │ │ ├── DT Regressor - MAPE: {mape_dt_reg * 100:.2f}%  
                 │ │ ├── LGBM Regressor - MAPE: {mape_lgbm_reg * 100:.2f}%  
                 '''
-            ).strip(), language = None)
+            ).strip())
 
             # Regression best model explainer (dalex) and target encoded variables interpretation
             if st.session_state['data_tracker_check'] != st.session_state['data_tracker']:
