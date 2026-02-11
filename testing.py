@@ -1147,6 +1147,8 @@ if st.session_state['df_pp'] is not None:
                 """
             ).strip())
             for col in feature_train.columns:
+              if not col.startswith('_'):
+                col = '_' + col
               if feature_train[col].nunique() > 2:
                 num_val = st.text_input(f"Insert '{col}' column value:", placeholder = 'Insert new data for prediction...')
                 try:
