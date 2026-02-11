@@ -359,7 +359,7 @@ if st.session_state['df_pp'] is not None:
       train_info = pd.DataFrame({'Variables': train.columns, 'Non-Null Count': train.count(numeric_only = False), 'Data Type': train.dtypes}).reset_index(drop = True)
       train_info['Data Type'] = train_info['Data Type'].astype(str).map({'float64': 'Numerical', 'object': 'Categorical'})
       st.dataframe(train_info.astype(str), height = 213 if len(train.columns) > 5 else 'auto', hide_index = True,
-                   column_config = {'Variables': st.column_config.Column(width = 200),
+                   column_config = {'Variables': st.column_config.Column(width = 190),
                                     'Non-Null Count': st.column_config.Column(width = 200),
                                     'Data Type': st.column_config.Column(width = 200)})
       unassigned_count_2 = 0
