@@ -555,10 +555,10 @@ if st.session_state['df_pp'] is not None:
             else:
               col_fix = str(col)
             col_fix = re.sub(r'[^a-zA-Z0-9]', '_', str(col_fix))
-            if len(col_fix) >= 30:
-              col_fix = col_fix[:13] + '...' + col_fix[-14:]
             col_fix = col_fix.rstrip('_')
             col_fix = re.sub(r'_{2,}', '_', col_fix)
+            if len(col_fix) >= 30:
+              col_fix = col_fix[:13] + '...' + col_fix[-14:]
             feature_train.rename(columns = {col: str(col_fix)}, inplace = True)
             feature_test.rename(columns = {col: str(col_fix)}, inplace = True)
             if resampled == True:
@@ -575,10 +575,10 @@ if st.session_state['df_pp'] is not None:
             else:
               col_fix = str(col)
             col_fix = re.sub(r'[^a-zA-Z0-9]', '_', str(col_fix))
-            if len(col_fix) >= 30:
-              col_fix = col_fix[:13] + '...' + col_fix[-14:]
             col_fix = col_fix.rstrip('_')
             col_fix = re.sub(r'_{2,}', '_', col_fix)
+            if len(col_fix) >= 30:
+              col_fix = col_fix[:13] + '...' + col_fix[-14:]
             target_train.rename(columns = {col: str(col_fix)}, inplace = True)
             target_test.rename(columns = {col: str(col_fix)}, inplace = True)
             if resampled == True:
