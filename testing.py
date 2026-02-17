@@ -620,6 +620,7 @@ if st.session_state['df_pp'] is not None:
           # Executing machine learning algorithms and evaluation metrics
           st.divider()
           st.header('⸻ Machine Learning 📊')
+          st.markdown('*Model fit taking too long? Grab a cup of tea!* 🍵')
 
           if is_object == False: # Regression modeling
 
