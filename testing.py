@@ -89,7 +89,7 @@ if st.session_state['df_pp'] is not None:
   st.write('✅ — Dataset upload and conversion to a pandas dataframe complete!')
   st.write('✅ — Dataset unusable column and white space cleaning complete!')
   st.write('Dataset Preview:')
-  st.dataframe(df_pp.head().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else np.nan if pd.isna(x) else str(x)), placeholder = '')
+  st.dataframe(df_pp.head().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else '-' if pd.isna(x) else str(x)), placeholder = '')
   st.write(f'⋯ {len(df_pp)} initial rows for analysis!')
   if 'col_names' not in st.session_state:
     st.session_state['col_names'] = None
@@ -210,11 +210,11 @@ if st.session_state['df_pp'] is not None:
               train[col_names[index]] = train[col_names[index]].replace(placeholder, central_tend_dict.get(col_names[index]))
           elif value == 'Ordinal':
             train[col_names[index]] = train[col_names[index]].astype(str)
-            central_tend_dict[col_names[index]] = train[col_names[index]].mode()[0]
+            central_tend_dict[col_names[index]] = train[col_names[index]].mode(dropna = True)[0]
             train[col_names[index]] = train[col_names[index]].replace('', central_tend_dict.get(col_names[index]))
           elif value == 'Nominal':
             train[col_names[index]] = train[col_names[index]].astype(str)
-            central_tend_dict[col_names[index]] = train[col_names[index]].mode()[0]
+            central_tend_dict[col_names[index]] = train[col_names[index]].mode(dropna = True)[0]
             train[col_names[index]] = train[col_names[index]].replace('', central_tend_dict.get(col_names[index]))
         
         test.dropna(inplace = True)
@@ -265,12 +265,14 @@ if st.session_state['df_pp'] is not None:
               train[col_names[index]] = train[col_names[index]].replace(placeholder, central_tend_dict.get(col_names[index]))
           elif value == 'Ordinal':
             train[col_names[index]] = train[col_names[index]].astype(str)
-            central_tend_dict[col_names[index]] = train[col_names[index]].mode()[0]
+            train[col_names[index]] = train[col_names[index]].replace('nan', np.nan)
+            central_tend_dict[col_names[index]] = train[col_names[index]].mode(dropna = True)[0]
             train[col_names[index]] = train[col_names[index]].fillna(train[col_names[index]].mode()[0])
             train[col_names[index]] = train[col_names[index]].replace('', train[col_names[index]].mode()[0])
           elif value == 'Nominal':
             train[col_names[index]] = train[col_names[index]].astype(str)
-            central_tend_dict[col_names[index]] = train[col_names[index]].mode()[0]
+            train[col_names[index]] = train[col_names[index]].replace('nan', np.nan)
+            central_tend_dict[col_names[index]] = train[col_names[index]].mode(dropna = True)[0]
             train[col_names[index]] = train[col_names[index]].fillna(train[col_names[index]].mode()[0])
             train[col_names[index]] = train[col_names[index]].replace('', train[col_names[index]].mode()[0])
         
@@ -294,10 +296,12 @@ if st.session_state['df_pp'] is not None:
               test[col_names[index]] = test[col_names[index]].replace(placeholder, central_tend_dict.get(col_names[index]))
           elif value == 'Ordinal':
             test[col_names[index]] = test[col_names[index]].astype(str)
+            test[col_names[index]] = test[col_names[index]].replace('nan', np.nan)
             test[col_names[index]] = test[col_names[index]].fillna(central_tend_dict.get(col_names[index]))
             test[col_names[index]] = test[col_names[index]].replace('', central_tend_dict.get(col_names[index]))
           elif value == 'Nominal':
             test[col_names[index]] = test[col_names[index]].astype(str)
+            test[col_names[index]] = test[col_names[index]].replace('nan', np.nan)
             test[col_names[index]] = test[col_names[index]].fillna(central_tend_dict.get(col_names[index]))
             test[col_names[index]] = test[col_names[index]].replace('', central_tend_dict.get(col_names[index]))
       
@@ -388,7 +392,7 @@ if st.session_state['df_pp'] is not None:
               st.write('Class 1 Label Selection:')
             elif train[target].nunique() > 5:
               st.write('Class 1 Label Selection (Scrollable):')
-            st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else np.nan if pd.isna(x) else str(x)),
+            st.dataframe(train[target].value_counts(sort = True).rename('Category Frequency').reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else '-' if pd.isna(x) else str(x)),
                          height = 213 if train[target].nunique() > 5 else 'auto',
                          hide_index = True,
                          column_config = {target: st.column_config.Column(width = 180), 'Category Frequency': st.column_config.Column(width = 200)})
@@ -806,7 +810,7 @@ if st.session_state['df_pp'] is not None:
                   interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list, default = interpretation_tabs_list[0])
                   for i, tab in enumerate(tabs):
-                    tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else np.nan if pd.isna(x) else str(x)),
+                    tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else '-' if pd.isna(x) else str(x)),
                                   hide_index = True,
                                   height = 386 if len(interpretation_tables_list[i]) > 10 else 'auto',
                                   column_config = {'Category': st.column_config.Column(width = 100),
@@ -859,7 +863,7 @@ if st.session_state['df_pp'] is not None:
                   interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list, default = interpretation_tabs_list[0])
                   for i, tab in enumerate(tabs):
-                    tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else np.nan if pd.isna(x) else str(x)),
+                    tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else '-' if pd.isna(x) else str(x)),
                                   hide_index = True,
                                   height = 386 if len(interpretation_tables_list[i]) > 10 else 'auto',
                                   column_config = {'Category': st.column_config.Column(width = 100),
@@ -1074,7 +1078,7 @@ if st.session_state['df_pp'] is not None:
                   interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list, default = interpretation_tabs_list[0])
                   for i, tab in enumerate(tabs):
-                    tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else np.nan if pd.isna(x) else str(x)),
+                    tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else '-' if pd.isna(x) else str(x)),
                                   hide_index = True,
                                   height = 386 if len(interpretation_tables_list[i]) > 10 else 'auto',
                                   column_config = {'Category': st.column_config.Column(width = 100),
@@ -1127,7 +1131,7 @@ if st.session_state['df_pp'] is not None:
                   interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list, default = interpretation_tabs_list[0])
                   for i, tab in enumerate(tabs):
-                    tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else np.nan if pd.isna(x) else str(x)),
+                    tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else '-' if pd.isna(x) else str(x)),
                                   hide_index = True,
                                   height = 386 if len(interpretation_tables_list[i]) > 10 else 'auto',
                                   column_config = {'Category': st.column_config.Column(width = 100),
