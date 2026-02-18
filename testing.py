@@ -527,31 +527,31 @@ if st.session_state['df_pp'] is not None:
           if dep_var in col_names_num and is_object == False:
             col_names_num.remove(dep_var)
           
-          vif_df_switch = False
           if len(col_names_num) > 1:
-            intercept = add_constant(feature_train[col_names_num])
-            vif_df = pd.DataFrame([vif(intercept.values, x) for x in range(intercept.shape[1])], index = intercept.columns).reset_index()
-            vif_df.columns = ['Features', 'VIF Score']
-            vif_df = vif_df.loc[vif_df.Features != 'const']
-            vif_df = vif_df.sort_values(by = 'VIF Score', ascending = False)
-            vif_df = vif_df.reset_index(drop = True)
-            vif_df_switch = True
-          
-          if vif_df_switch == True:
-            vif_df = vif_df[vif_df['VIF Score'] >= 5]
-            col_names_num_vif = [x for x in vif_df['Features']]
-            feature_train.drop(columns = col_names_num_vif, inplace = True)
-            feature_test.drop(columns = col_names_num_vif, inplace = True)
-            if resampled == True:
-              feature_train_balanced.drop(columns = col_names_num_vif, inplace = True)
-            if not target_encoded_vars.empty:
-              col_names_num_vif_pre_enc = [x + '_Pre_Enc' for x in col_names_num_vif]
-              col_names_num_vif_post_enc = [x + '_Post_Enc' for x in col_names_num_vif]
-              target_encoded_vars.drop(columns = col_names_num_vif_pre_enc, inplace = True, errors = 'ignore')
-              target_encoded_vars.drop(columns = col_names_num_vif_post_enc, inplace = True, errors = 'ignore')
-            if len(feature_train.columns) == 0:
-              st.error('No feature column detected post-VIF multicollinearity diagnostic!', icon = '🛑')
-            st.write('✅ — VIF multicollinearity diagnostic complete!')
+            vif_diagnostic = True
+            while vif_diagnostic == True:
+              if len(col_names_num) > 1:
+                intercept = add_constant(feature_train[col_names_num])
+                vif_df = pd.DataFrame([vif(intercept.values, x) for x in range(intercept.shape[1])], index = intercept.columns).reset_index()
+                vif_df.columns = ['Features', 'VIF Score']
+                vif_df = vif_df.loc[vif_df.Features != 'const']
+                vif_df = vif_df.sort_values(by = 'VIF Score', ascending = False)
+                vif_df = vif_df.reset_index(drop = True)
+                if vif_df['VIF Score'].iloc[0] >= 5:
+                  feature_train.drop(columns = vif_df['Features'].iloc[0], inplace = True, errors = 'ignore')
+                  feature_test.drop(columns = vif_df['Features'].iloc[0], inplace = True, errors = 'ignore')
+                  if resampled == True:
+                    feature_train_balanced.drop(columns = vif_df['Features'].iloc[0], inplace = True, errors = 'ignore')
+                  if not target_encoded_vars.empty:
+                    target_encoded_vars.drop(columns = (vif_df['Features'].iloc[0] + '_Pre_Enc'), inplace = True, errors = 'ignore')
+                    target_encoded_vars.drop(columns = (vif_df['Features'].iloc[0] + '_Post_Enc'), inplace = True, errors = 'ignore')
+                  col_names_num.remove(vif_df['Features'].iloc[0]) # Last use of 'col_names_num' within the script, not used beyond this line
+                else:
+                  vif_diagnostic = False
+                  st.write('✅ — VIF multicollinearity diagnostic complete!')
+              else:
+                vif_diagnostic = False
+                st.write('✅ — VIF multicollinearity diagnostic complete!')
           
           # Column name string processing error fix (modeling bug fix)
           for col in feature_train.columns:
