@@ -21,7 +21,7 @@ import re
 
 # Title call
 st.title('Mini AutoML (Cross-Sectional) v1.0')
-st.write('App is best used on desktop, minimize hyphen use in data for best results.')
+st.write('App is best used on desktop.')
 
 # Layer guard initializations
 if 'df_pp' not in st.session_state:
@@ -711,45 +711,45 @@ if st.session_state['df_pp'] is not None:
                 f'''
                 ▼ Models Used
 
-                ├─ Linear Model - Linear Regression
-                ├─ Tree-Based Model - Decision Tree Regressor (DT)
-                ├─ Ensemble Model - Light Gradient Boosting Machine Regressor (LGBM)
+                ├─ Linear Model - Linear Regression  
+                ├─ Tree-Based Model - Decision Tree Regressor (DT)  
+                ├─ Ensemble Model - Light Gradient Boosting Machine Regressor (LGBM)  
 
                 ▼ Train/Test Sets Sample Size Validation
 
-                ├─ Feature (Train) Sample Size (n): {len(feature_train)}
-                ├─ Target (Train) Sample Size (n): {len(target_train)}
-                ├─ Feature (Test) Sample Size (n): {len(feature_test)}
-                ├─ Target (Test) Sample Size (n): {len(target_test)}
+                ├─ Feature (Train) Sample Size (n): {len(feature_train)}  
+                ├─ Target (Train) Sample Size (n): {len(target_train)}  
+                ├─ Feature (Test) Sample Size (n): {len(feature_test)}  
+                ├─ Target (Test) Sample Size (n): {len(target_test)}  
 
                 ▼ Train/Test Sets Dimensionality Validation
 
-                ├─ Feature (Train) Column Count: {len(feature_train.columns)}
-                ├─ Target (Train) Column Count: {len(target_train.columns)}
-                ├─ Feature (Test) Column Count: {len(feature_test.columns)}
-                ├─ Target (Test) Column Count: {len(target_test.columns)}
+                ├─ Feature (Train) Column Count: {len(feature_train.columns)}  
+                ├─ Target (Train) Column Count: {len(target_train.columns)}  
+                ├─ Feature (Test) Column Count: {len(feature_test.columns)}  
+                ├─ Target (Test) Column Count: {len(target_test.columns)}  
 
                 ▼ Model Fit Evaluation Metrics (Test Set Predictions)
 
-                │ Coefficient of Determination (R2 Score - Unit: Percentage)
-                │ ├─ Linear Regression - R2 Score: {r2_ln * 100:.2f}%
-                │ ├─ DT Regressor - R2 Score: {r2_dt_reg * 100:.2f}%
-                │ ├─ LGBM Regressor - R2 Score: {r2_lgbm_reg * 100:.2f}%
+                │ Coefficient of Determination (R2 Score - Unit: Percentage)  
+                │ ├─ Linear Regression - R2 Score: {r2_ln * 100:.2f}%  
+                │ ├─ DT Regressor - R2 Score: {r2_dt_reg * 100:.2f}%  
+                │ ├─ LGBM Regressor - R2 Score: {r2_lgbm_reg * 100:.2f}%  
 
-                │ Root Mean Squared Error (RMSE - Unit: Per Target)
-                │ ├─ Linear Regression - RMSE: {rmse_ln:.4f}
-                │ ├─ DT Regressor - RMSE: {rmse_dt_reg:.4f}
-                │ ├─ LGBM Regressor - RMSE: {rmse_lgbm_reg:.4f}
+                │ Root Mean Squared Error (RMSE - Unit: Per Target)  
+                │ ├─ Linear Regression - RMSE: {rmse_ln:.4f}  
+                │ ├─ DT Regressor - RMSE: {rmse_dt_reg:.4f}  
+                │ ├─ LGBM Regressor - RMSE: {rmse_lgbm_reg:.4f}  
 
-                │ Mean Absolute Error (MAE - Unit: Per Target)
-                │ ├─ Linear Regression - MAE: {mae_ln:.4f}
-                │ ├─ DT Regressor - MAE: {mae_dt_reg:.4f}
-                │ ├─ LGBM Regressor - MAE: {mae_lgbm_reg:.4f}
+                │ Mean Absolute Error (MAE - Unit: Per Target)  
+                │ ├─ Linear Regression - MAE: {mae_ln:.4f}  
+                │ ├─ DT Regressor - MAE: {mae_dt_reg:.4f}  
+                │ ├─ LGBM Regressor - MAE: {mae_lgbm_reg:.4f}  
 
-                │ Mean Absolute Percentage Error (MAPE - Unit: Percentage)
-                │ ├─ Linear Regression - MAPE: {mape_ln * 100:.2f}%
-                │ ├─ DT Regressor - MAPE: {mape_dt_reg * 100:.2f}%
-                │ ├─ LGBM Regressor - MAPE: {mape_lgbm_reg * 100:.2f}%
+                │ Mean Absolute Percentage Error (MAPE - Unit: Percentage)  
+                │ ├─ Linear Regression - MAPE: {mape_ln * 100:.2f}%  
+                │ ├─ DT Regressor - MAPE: {mape_dt_reg * 100:.2f}%  
+                │ ├─ LGBM Regressor - MAPE: {mape_lgbm_reg * 100:.2f}%  
                 '''
             ).strip())
 
@@ -772,9 +772,9 @@ if st.session_state['df_pp'] is not None:
                   f'''
                   ▼ Explainable Artificial Intelligence (XAI)
 
-                  ├─ Best Model - {best_model_name[5:]}
-                  ├─ Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {best_model_rmse:.4f}
-                  ├─ Loss Function - Root Mean Squared Error (RMSE)
+                  ├─ Best Model - {best_model_name[5:]}  
+                  ├─ Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {best_model_rmse:.4f}  
+                  ├─ Loss Function - Root Mean Squared Error (RMSE)  
                   '''
               ).strip())
 
@@ -814,7 +814,7 @@ if st.session_state['df_pp'] is not None:
                       """
                       ▼ Target Encoded Variable(s) Interpretation
 
-                      ├─ Encoded Unit - Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)
+                      ├─ Encoded Unit - Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)  
 
                       ▼ Interpretation Table(s):
                       """
@@ -844,9 +844,9 @@ if st.session_state['df_pp'] is not None:
                   f"""
                   ▼ Explainable Artificial Intelligence (XAI)
 
-                  ├─ Best Model - {st.session_state['best_model_name'][5:]}
-                  ├─ Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {st.session_state['best_model_rmse']:.4f}
-                  ├─ Loss Function - Root Mean Squared Error (RMSE)
+                  ├─ Best Model - {st.session_state['best_model_name'][5:]}  
+                  ├─ Metric for Determination of Best Model - Root Mean Squared Error (RMSE) at {st.session_state['best_model_rmse']:.4f}  
+                  ├─ Loss Function - Root Mean Squared Error (RMSE)  
                   """
               ).strip())
 
@@ -867,7 +867,7 @@ if st.session_state['df_pp'] is not None:
                       """
                       ▼ Target Encoded Variable(s) Interpretation
 
-                      ├─ Encoded Unit - Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)
+                      ├─ Encoded Unit - Average Value of Target per Category (Min/Max 2-Fold Cross-Validation)  
 
                       ▼ Interpretation Table(s):
                       """
@@ -980,27 +980,27 @@ if st.session_state['df_pp'] is not None:
                 f'''
                 ▼ Models Used
 
-                ├─ Linear Model - Logistic Regression
-                ├─ Tree-Based Model - Decision Tree Classifier (DT)
-                ├─ Ensemble Model - Light Gradient Boosting Machine Classifier (LGBM)
+                ├─ Linear Model - Logistic Regression  
+                ├─ Tree-Based Model - Decision Tree Classifier (DT)  
+                ├─ Ensemble Model - Light Gradient Boosting Machine Classifier (LGBM)  
 
                 ▼ Train/Test Sets Sample Size Validation
 
-                ├─ Feature (Train) Sample Size (n): {len(feature_train)}
-                ├─ Target (Train) Sample Size (n): {len(target_train)}
-                ├─ Feature (Train-Balanced) Sample Size (n): {len(feature_train_balanced)}
-                ├─ Target (Train-Balanced) Sample Size (n): {len(target_train_balanced)}
-                ├─ Feature (Test) Sample Size (n): {len(feature_test)}
-                ├─ Target (Test) Sample Size (n): {len(target_test)}
+                ├─ Feature (Train) Sample Size (n): {len(feature_train)}  
+                ├─ Target (Train) Sample Size (n): {len(target_train)}  
+                ├─ Feature (Train-Balanced) Sample Size (n): {len(feature_train_balanced)}  
+                ├─ Target (Train-Balanced) Sample Size (n): {len(target_train_balanced)}  
+                ├─ Feature (Test) Sample Size (n): {len(feature_test)}  
+                ├─ Target (Test) Sample Size (n): {len(target_test)}  
 
                 ▼ Train/Test Sets Dimensionality Validation
 
-                ├─ Feature (Train) Column Count: {len(feature_train.columns)}
-                ├─ Target (Train) Column Count: {len(target_train.columns)}
-                ├─ Feature (Train-Balanced) Column Count: {len(feature_train_balanced.columns)}
-                ├─ Target (Train-Balanced) Column Count: {len(target_train_balanced.columns)}
-                ├─ Feature (Test) Column Count: {len(feature_test.columns)}
-                ├─ Target (Test) Column Count: {len(target_test.columns)}
+                ├─ Feature (Train) Column Count: {len(feature_train.columns)}  
+                ├─ Target (Train) Column Count: {len(target_train.columns)}  
+                ├─ Feature (Train-Balanced) Column Count: {len(feature_train_balanced.columns)}  
+                ├─ Target (Train-Balanced) Column Count: {len(target_train_balanced.columns)}  
+                ├─ Feature (Test) Column Count: {len(feature_test.columns)}  
+                ├─ Target (Test) Column Count: {len(target_test.columns)}  
                 '''
             ).strip())
 
@@ -1040,9 +1040,9 @@ if st.session_state['df_pp'] is not None:
                   f'''
                   ▼ Explainable Artificial Intelligence (XAI)
 
-                  ├─ Best Model - {best_model_name[5:]}
-                  ├─ Metric for Determination of Best Model - Class 1 F1 Score at {best_model_f1 * 100:.2f}%
-                  ├─ Loss Function - Area Above the Curve (1-AUC)
+                  ├─ Best Model - {best_model_name[5:]}  
+                  ├─ Metric for Determination of Best Model - Class 1 F1 Score at {best_model_f1 * 100:.2f}%  
+                  ├─ Loss Function - Area Above the Curve (1-AUC)  
                   '''
               ).strip())
 
@@ -1082,7 +1082,7 @@ if st.session_state['df_pp'] is not None:
                       """
                       ▼ Target Encoded Variable(s) Interpretation
 
-                      ├─ Encoded Unit - Probability of Class 1 Target per Category (Min/Max 2-Fold Cross-Validation)
+                      ├─ Encoded Unit - Probability of Class 1 Target per Category (Min/Max 2-Fold Cross-Validation)  
 
                       ▼ Interpretation Table(s):
                       """
@@ -1112,9 +1112,9 @@ if st.session_state['df_pp'] is not None:
                   f"""
                   ▼ Explainable Artificial Intelligence (XAI)
 
-                  ├─ Best Model - {st.session_state['best_model_name'][5:]}
-                  ├─ Metric for Determination of Best Model - Class 1 F1 Score at {st.session_state['best_model_f1'] * 100:.2f}%
-                  ├─ Loss Function - Area Above the Curve (1-AUC)
+                  ├─ Best Model - {st.session_state['best_model_name'][5:]}  
+                  ├─ Metric for Determination of Best Model - Class 1 F1 Score at {st.session_state['best_model_f1'] * 100:.2f}%  
+                  ├─ Loss Function - Area Above the Curve (1-AUC)  
                   """
               ).strip())
 
@@ -1135,7 +1135,7 @@ if st.session_state['df_pp'] is not None:
                       """
                       ▼ Target Encoded Variable(s) Interpretation
 
-                      ├─ Encoded Unit - Probability of Class 1 Target per Category (Min/Max 2-Fold Cross-Validation)
+                      ├─ Encoded Unit - Probability of Class 1 Target per Category (Min/Max 2-Fold Cross-Validation)  
 
                       ▼ Interpretation Table(s):
                       """
@@ -1211,9 +1211,9 @@ if st.session_state['df_pp'] is not None:
                     f"""
                     ▼ Best Regression Model Prediction
 
-                    ├─ Best Regression Model: {st.session_state['best_model_name'][5:]}
-                    ├─ Best Model Test Set R2 Score: {st.session_state['best_model_r2'] * 100:.2f}%
-                    ├─ Best Model Target Value Prediction: {float(new_prediction.flatten()[0]):.4f}
+                    ├─ Best Regression Model: {st.session_state['best_model_name'][5:]}  
+                    ├─ Best Model Test Set R2 Score: {st.session_state['best_model_r2'] * 100:.2f}%  
+                    ├─ Best Model Target Value Prediction: {float(new_prediction.flatten()[0]):.4f}  
                     """
                 ))
 
@@ -1228,10 +1228,10 @@ if st.session_state['df_pp'] is not None:
                     f"""
                     ▼ Best Classification Model Prediction
 
-                    ├─ Best Classification Model: {st.session_state['best_model_name'][5:]}
-                    ├─ Best Model Test Set Class 1 F1 Score: {st.session_state['best_model_f1'] * 100:.2f}%
-                    ├─ Best Model Class 1 Probability: {probability_disp * 100:.2f}%
-                    ├─ Best Model Target Class Prediction: {class_outcome}
+                    ├─ Best Classification Model: {st.session_state['best_model_name'][5:]}  
+                    ├─ Best Model Test Set Class 1 F1 Score: {st.session_state['best_model_f1'] * 100:.2f}%  
+                    ├─ Best Model Class 1 Probability: {probability_disp * 100:.2f}%  
+                    ├─ Best Model Target Class Prediction: {class_outcome}  
                     """
                 ).strip())
 
