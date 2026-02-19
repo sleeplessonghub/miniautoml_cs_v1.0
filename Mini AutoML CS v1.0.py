@@ -637,16 +637,16 @@ if st.session_state['df_pp'] is not None:
           if fin_dupe_drop > 0:
             st.warning('Post-preprocessing column duplicates identified and removed, interpretability may be at risk!', icon = '🚧')
             with st.expander('See duplicated features...'):
-              st.write('List of Duplicated Features:')
+              st.markdown('List of Duplicated Features:')
               for col in set(fin_dupe_list):
                 col_fix = col.replace('_', r'\_')
-                st.write(f'* {col_fix}')
+                st.markdown(f'* {col_fix}')
           if target_train.columns[0] in feature_train.columns:
             st.error('Post-preprocessing halt, detected feature with the same name as the target variable!', icon = '🛑')
             with st.expander('See target variable name...'):
-              st.write(f'Target Variable Name:')
+              st.markdown(f'Target Variable Name:')
               target_temp = target_train.columns[0].replace('_', r'\_')
-              st.write(f'* {target_temp}')
+              st.markdown(f'* {target_temp}')
             st.stop()
 
           st.session_state['data_tracker'] = st.session_state['data_tracker'] + str(feature_train.columns.tolist()) # To be used for new data check for ML (column name change)
