@@ -21,7 +21,7 @@ import re
 
 # Title call
 st.title('Mini AutoML (Cross-Sectional) v1.0')
-st.write('App is best used on desktop.')
+st.write('App is best used on desktop, minimize hyphen use in data for best results.')
 
 # Layer guard initializations
 if 'df_pp' not in st.session_state:
@@ -69,7 +69,7 @@ if st.session_state['df_pp'] is not None:
     if col.startswith('unnamed:') or len(df_pp) == df_pp[col].isna().sum() or df_pp[col].nunique() == 1:
       df_pp.drop(col, axis = 1, inplace = True)
   
-  df_pp = df_pp.loc[:, ~df_pp.columns.duplicated()].copy() # Removing duplicated columns while keeping first instance
+  df_pp = df_pp.loc[:, ~df_pp.columns.duplicated(keep = 'first')].copy() # Removing duplicated columns while keeping first instance
 
   # Dataset column name/object values leading/trailing white space cleaning
   original_columns_2 = [col for col in df_pp.columns]
@@ -616,6 +616,24 @@ if st.session_state['df_pp'] is not None:
             target_train_balanced.columns = target_train_balanced.columns.str.lower()
           feature_test.columns = feature_test.columns.str.lower()
           target_test.columns = target_test.columns.str.lower()
+
+          # Deduplicating final feature dataframes' column names and intercepting target variable's column naming error
+          fin_dupe_drop = 0
+          if feature_train.columns.duplicated().any():
+            feature_train = feature_train.loc[:, ~feature_train.columns.duplicated(keep = 'first')].copy()
+            fin_dupe_drop = fin_dupe_drop + 1
+          if resampled == True:
+            if feature_train_balanced.columns.duplicated().any():
+              feature_train_balanced = feature_train_balanced.loc[:, ~feature_train_balanced.columns.duplicated(keep = 'first')].copy()
+              fin_dupe_drop = fin_dupe_drop + 1
+          if feature_test.columns.duplicated().any():
+            feature_test = feature_test.loc[:, ~feature_test.columns.duplicated(keep = 'first')].copy()
+            fin_dupe_drop = fin_dupe_drop + 1
+          
+          if fin_dupe_drop > 0:
+            st.warning('Pre-ML column duplicates identified and removed, feature interpretability may be at risk!', icon = '🚧')
+          if target_train.columns.iloc[0] in feature_train.columns:
+            st.error("Pre-ML stopping, detected feature with the same name as the target variable!", icon = '🛑')
           
           st.session_state['data_tracker'] = st.session_state['data_tracker'] + str(feature_train.columns.tolist()) # To be used for new data check for ML (column name change)
           
