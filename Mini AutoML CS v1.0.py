@@ -618,22 +618,36 @@ if st.session_state['df_pp'] is not None:
           target_test.columns = target_test.columns.str.lower()
 
           # Deduplicating final feature dataframes' column names and intercepting target variable's column naming error
+          fin_dupe_list = []
           fin_dupe_drop = 0
           if feature_train.columns.duplicated().any():
+            fin_dupe_list.extend(feature_train.columns[feature_train.columns.duplicated(keep = 'first')].tolist())
             feature_train = feature_train.loc[:, ~feature_train.columns.duplicated(keep = 'first')].copy()
             fin_dupe_drop = fin_dupe_drop + 1
           if resampled == True:
             if feature_train_balanced.columns.duplicated().any():
+              fin_dupe_list.extend(feature_train_balanced.columns[feature_train_balanced.columns.duplicated(keep = 'first')].tolist())
               feature_train_balanced = feature_train_balanced.loc[:, ~feature_train_balanced.columns.duplicated(keep = 'first')].copy()
               fin_dupe_drop = fin_dupe_drop + 1
           if feature_test.columns.duplicated().any():
+            fin_dupe_list.extend(feature_test.columns[feature_test.columns.duplicated(keep = 'first')].tolist())
             feature_test = feature_test.loc[:, ~feature_test.columns.duplicated(keep = 'first')].copy()
             fin_dupe_drop = fin_dupe_drop + 1
 
           if fin_dupe_drop > 0:
-            st.warning('Pre-ML column duplicates identified and removed, feature interpretability may be at risk!', icon = '🚧')
+            st.warning('Post-preprocessing column duplicates identified and removed, interpretability may be at risk!', icon = '🚧')
+            with st.expander('See duplicated features...'):
+              st.write('List of Duplicated Features:')
+              for col in set(fin_dupe_list):
+                col_fix = col.replace('_', r'\_')
+                st.write(f'* {col_fix}')
           if target_train.columns[0] in feature_train.columns:
-            st.error("Pre-ML stopping, detected feature with the same name as the target variable!", icon = '🛑')
+            st.error('Post-preprocessing halt, detected feature with the same name as the target variable!', icon = '🛑')
+            with st.expander('See target variable name...'):
+              st.write(f'Target Variable Name:')
+              target_temp = target_train.columns[0].replace('_', r'\_')
+              st.write(f'* {target_temp}')
+            st.stop()
 
           st.session_state['data_tracker'] = st.session_state['data_tracker'] + str(feature_train.columns.tolist()) # To be used for new data check for ML (column name change)
 
@@ -825,7 +839,7 @@ if st.session_state['df_pp'] is not None:
                     if col.endswith('_Pre_Enc'):
                       locals()[f'{col[:-8]}_Table']['mean'] = round((locals()[f'{col[:-8]}_Table']['min'] + locals()[f'{col[:-8]}_Table']['max']) / 2, 4)
                       interpretation_tables_list.append(locals()[f'{col[:-8]}_Table'])
-                  interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  interpretation_tabs_list = [f"{col[:-8].replace('_', r'\_')}" for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list, default = interpretation_tabs_list[0])
                   for i, tab in enumerate(tabs):
                     tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else '-' if pd.isna(x) else str(x)),
@@ -878,7 +892,7 @@ if st.session_state['df_pp'] is not None:
                     if col.endswith('_Pre_Enc'):
                       locals()[f'{col[:-8]}_Table']['mean'] = round((locals()[f'{col[:-8]}_Table']['min'] + locals()[f'{col[:-8]}_Table']['max']) / 2, 4)
                       interpretation_tables_list.append(locals()[f'{col[:-8]}_Table'])
-                  interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  interpretation_tabs_list = [f"{col[:-8].replace('_', r'\_')}" for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list, default = interpretation_tabs_list[0])
                   for i, tab in enumerate(tabs):
                     tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else '-' if pd.isna(x) else str(x)),
@@ -1093,7 +1107,7 @@ if st.session_state['df_pp'] is not None:
                     if col.endswith('_Pre_Enc'):
                       locals()[f'{col[:-8]}_Table']['mean'] = round((locals()[f'{col[:-8]}_Table']['min'] + locals()[f'{col[:-8]}_Table']['max']) / 2, 4)
                       interpretation_tables_list.append(locals()[f'{col[:-8]}_Table'])
-                  interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  interpretation_tabs_list = [f"{col[:-8].replace('_', r'\_')}" for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list, default = interpretation_tabs_list[0])
                   for i, tab in enumerate(tabs):
                     tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else '-' if pd.isna(x) else str(x)),
@@ -1146,7 +1160,7 @@ if st.session_state['df_pp'] is not None:
                     if col.endswith('_Pre_Enc'):
                       locals()[f'{col[:-8]}_Table']['mean'] = round((locals()[f'{col[:-8]}_Table']['min'] + locals()[f'{col[:-8]}_Table']['max']) / 2, 4)
                       interpretation_tables_list.append(locals()[f'{col[:-8]}_Table'])
-                  interpretation_tabs_list = [f'{col[:-8]}' for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
+                  interpretation_tabs_list = [f"{col[:-8].replace('_', r'\_')}" for col in target_encoded_vars.columns if col.endswith('_Pre_Enc')]
                   tabs = st.tabs(interpretation_tabs_list, default = interpretation_tabs_list[0])
                   for i, tab in enumerate(tabs):
                     tab.dataframe(interpretation_tables_list[i].reset_index().map(lambda x: str(int(float(x))) if (str(x).replace('.', '', 1).isdigit() and str(x).endswith('.0')) else str(round(x, 4)) if (isinstance(x, float) and not pd.isna(x)) else '-' if pd.isna(x) else str(x)),
@@ -1178,14 +1192,16 @@ if st.session_state['df_pp'] is not None:
             ).strip())
             for col in feature_train.columns:
               if feature_train[col].nunique() > 2:
-                num_val = st.text_input(f"Insert '{col}' column value:", placeholder = 'Insert new data for prediction...')
+                col_fix = col.replace('_', r'\_')
+                num_val = st.text_input(f"Insert '{col_fix}' column value:", placeholder = 'Insert new data for prediction...')
                 try:
                   num_val = float(num_val)
                 except:
                   pass
                 prediction_list.append(num_val)
               if feature_train[col].nunique() == 2:
-                cat_val = st.radio(f"Select '{col}' variable state:", ['True', 'False'], index = None, horizontal = True)
+                col_fix = col.replace('_', r'\_')
+                cat_val = st.radio(f"Select '{col_fix}' variable state:", ['True', 'False'], index = None, horizontal = True)
                 cat_val = 1 if cat_val == 'True' else 0 if cat_val == 'False' else None
                 prediction_list.append(cat_val)
             submitted_3 = st.form_submit_button('Confirm new data input')
@@ -1239,3 +1255,4 @@ if st.session_state['df_pp'] is not None:
 
 else:
   st.subheader('No file upload detected 💤')
+  
